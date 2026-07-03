@@ -56,6 +56,88 @@ Memory     ←  Lifecycle    ←  Risk/Metrics   ←  I/O
 
 ---
 
+## Agent Anatomy (Progressive Disclosure)
+
+Every agent has a layered structure. Not all layers need to be filled at once,
+but understanding the anatomy helps scope the design correctly.
+
+```
+agent/
+├── Level 1: Identity Layer       ← always visible (~50 words)
+│   ├── name
+│   ├── description (when to trigger, what it does)
+│   └── model / platform hint
+│
+├── Level 2: Instruction Layer    ← loaded when agent activates
+│   ├── role & personality
+│   ├── capabilities & boundaries
+│   ├── workflow & rules
+│   └── communication style
+│
+└── Level 3: Resource Layer       ← loaded on demand
+    ├── knowledge & references    (docs, specs, past decisions)
+    ├── tool categories           (types of tools, not specific tools)
+    ├── skill references          (pointers to reusable skills)
+    └── test prompts & evals      (how to verify it works)
+```
+
+### Level 1 — Identity Layer
+This is the **frontmatter**. It determines when the agent is summoned.
+Must answer: "What is this agent, and when should it activate?"
+
+Keep it tight — 1-2 sentences. Include trigger conditions.
+```
+name: code-reviewer
+description: >-
+  Reviews pull requests for security, style, and correctness.
+  Use when a PR is opened, or when asked to review code changes.
+  Do not use for architecture design or system planning.
+```
+
+### Level 2 — Instruction Layer
+This is the **body** of the agent. It defines how the agent behaves.
+Includes personality, capabilities, rules, workflow, output format.
+
+This is the core of the `create-agent` Scope Interview output.
+
+### Level 3 — Resource Layer
+Everything else the agent might need, loaded on demand.
+
+**Knowledge & References:**
+- Domain documentation, past decisions, project conventions
+- Glossary of terms, common patterns, anti-patterns
+- Links to external standards or APIs
+
+**Tool Categories (direction, not specific tools):**
+```
+Knowledge retrieval    → search, vector DBs, document stores, web scraping
+Code execution         → sandboxes, interpreters, compilers, linters
+Communication         → email, messaging, notifications, webhooks
+System operations     → file I/O, process management, network, registry
+Data processing       → ETL, transformation, validation, storage
+Visual/creative       → image generation, layout engines, animation
+Monitoring/observability → logs, metrics, tracing, alerting
+```
+
+**Guideline:** Define the **category** and **purpose** of tools needed.
+Let the builder pick the actual tool based on current ecosystem.
+
+```
+✅ "Needs a vector database for semantic recall"
+   (builder picks Chroma / Qdrant / pgvector)
+❌ "Needs Chroma DB"  
+   (too specific, ages out)
+```
+
+**Skill References:**
+- Pointers to reusable skills in `skill-library/` that this agent should load
+- Not inline — just references with when-to-use notes
+
+**Test Prompts & Evals:**
+- See Agent Test Plan section below
+
+---
+
 ## Agent Archetype System
 
 Agents are not all the same. Their structure, personality, tools, and
@@ -520,6 +602,133 @@ User request
 
 ---
 
+## Agent Test Plan
+
+Every agent capability needs a test prompt. This is not unit testing —
+it's behavioral validation: "Does the agent do what we designed it to do?"
+
+### When to Create
+
+Add test plans at **Standard layer and above**. At Sketch layer, skip tests
+for unchanged capabilities.
+
+### Test Prompt Format
+
+For each capability, define:
+
+```
+Capability: [name]
+Test prompt: "[exact prompt to give the agent]"
+Expected output: "[what a correct response looks like]"
+Edge cases:
+  - [edge case 1] → [expected handling]
+  - [edge case 2] → [expected handling]
+```
+
+### Example
+
+```
+Capability: Search knowledge base
+Test prompt: "หาข้อมูลเกี่ยวกับ Docker networking"
+Expected output: สรุปสั้นๆ 1-3 ข้อ + แหล่งที่มา
+Edge cases:
+  - ไม่พบข้อมูล → "ไม่พบข้อมูลในฐานความรู้ แนะนำให้ค้นจากภายนอก"
+  - คำค้นกำกวม → ถามให้ชัดก่อน ("Docker networking — หมายถึง network driver?
+    overlay? หรือปัญหาการเชื่อมต่อ?")
+  - ขอข้อมูลที่เป็นความลับ → "ขออภัย ข้อมูลนี้ไม่สามารถเปิดเผยได้"
+```
+
+### Test Plan Placement
+
+```
+Create Agent session
+        │
+        ▼
+  Spec approved → Build agent → Run test prompts
+        │                         │
+        │                    ┌─────┴──────┐
+        │                    ▼            ▼
+        │                 PASS          FAIL
+        │                    │            │
+        │              ┌─────┘            ▼
+        │              │         Iterate & fix
+        │              │         → rerun test
+        │              │         → pass → done
+        ▼              ▼
+   Deploy / Handoff
+```
+
+### What to Test
+
+| Test Type | What | When |
+|-----------|------|------|
+| **Happy path** | Capability works as designed | Every capability |
+| **Boundary** | Agent refuses out-of-scope requests | Every Critical Rule |
+| **Failure** | Tool unavailable, bad input, timeout | Layer 3+ |
+| **Edge case** | Unusual but realistic input | Layer 3+ |
+| **Multi-turn** | Conversation context maintained | Layer 4+ |
+
+---
+
+## Agent Iteration Loop
+
+An agent is not done after the first build. It improves through iteration.
+
+### The Loop
+
+```
+Build  →  Run test prompts  →  Review results
+  ↑                              │
+  │                         ┌────┴────┐
+  │                         ▼         ▼
+  │                      PASS?      FAIL?
+  │                         │         │
+  │                    ┌────┘         ▼
+  │                    │      Identify gap
+  │                    │         │
+  │                    │    ┌─────┴──────┐
+  │                    │    ▼            ▼
+  │                    │  Scope gap?  Behavior gap?
+  │                    │  (missing     (wrong output,
+  │                    │   capability)  bad tone, etc.)
+  │                    │    │            │
+  │                    │    ▼            ▼
+  │                    │  Redesign     Fix instruction
+  │                    │  spec         / rules
+  │                    │    │            │
+  │                    └────┴────────────┘
+  │                              │
+  └──────────────────────────────┘
+        (loop until stable)
+```
+
+### When to Stop Iterating
+
+| Signal | Action |
+|--------|--------|
+| All test prompts pass | ✅ Deploy |
+| Critical path passes, minor edge cases fail | ⚠️ Log known issues, deploy |
+| Same failure persists after 3 redesigns | 🛑 Escalate — may need scope change |
+| User says "enough" | 🛑 Stop |
+
+### Iteration Documentation
+
+Each iteration should be documented:
+
+```
+## Iteration 2 — 2026-07-03
+What changed: Added retry logic for API failure
+Before: API timeout → silent failure
+After: API timeout → retry 3x → log → escalate
+Test results: 6/6 pass (was 4/6)
+Known issues: Rate limit detection not tested — needs live API
+```
+
+Documentation lives in the agent's journal or a companion log file.
+Keep it light — bullet points, not essays.
+
+---
+
 ## Grill Methodology (How to Ask)
 
 Borrowed from `grill-with-docs`. Use these techniques during the Scope Interview.
@@ -815,9 +1024,13 @@ These gates must pass before moving to the next phase.
 
 ### Build Gate
 - [ ] Spec approved by user
+- [ ] Test prompts written for each new capability
+- [ ] Happy-path tests pass
+- [ ] Boundary tests confirm Critical Rules
 - [ ] index.md updated
 - [ ] Journal updated
 - [ ] Handoff notes written (if not building)
+- [ ] Iteration cycle (if needed) documented
 
 ---
 

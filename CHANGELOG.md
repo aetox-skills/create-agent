@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.4.0 (2026-07-03)
+
+- **Agent Anatomy (Progressive Disclosure)** — 3-level structure: Identity → Instruction → Resource
+- **Tool Categories** — directional guidance (ไม่指名 specific tools): knowledge retrieval, code execution, communication, system ops, data processing, visual/creative, monitoring
+- **Agent Test Plan** — test prompts per capability with format, example, edge cases
+- **Agent Iteration Loop** — Build → Test → Review → Redesign → Repeat
+- Iteration documentation standard (what changed, before/after, test results, known issues)
+- Build Gate expanded: test prompts, happy-path, boundary tests, iteration docs
+- All patterns adapted from `skill-creator` (test/evals, iteration, progressive disclosure, lean principle)
+
 ## v0.3.0 (2026-07-03)
 
 - **Agent Archetype System** — 8 archetypes (System, Creative, Developer, Scribe, Specialist, Orchestrator, Researcher, Game) with domain weight table
