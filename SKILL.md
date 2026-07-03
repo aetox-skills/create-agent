@@ -202,10 +202,12 @@ Capabilities:
   - [action 2]
 Boundaries:
   - [ห้ามทำอะไร]
-Tools: [tool ที่ใช้ / ไม่ต้องเพิ่ม]
+Authority: [Read-only / Suggest / Modify in scope / Execute / Autonomous]
+Tools: [tool / MCP / none needed]
 Approval: [Confirmed via Quick / Revised & Confirmed]
 ```
 
+ใช้ไฟล์ [`templates/quick-spec.md`](templates/quick-spec.md) เป็น template จริง
 ห้ามย่อหรือข้าม fields นี้ — ถ้า field ไหน obvious ให้เขียน "—" (ไม่ต้องถาม user)
 ถ้า modify existing agent → ใช้ format เดียวกัน แต่แสดงเฉพาะ field ที่เปลี่ยน
 
@@ -229,6 +231,7 @@ Present mini-spec:
     - แยกตาม sender / subject
   Boundaries:
     - ห้ามตอบเมล์, ห้ามลบเมล์
+  Authority: Read-only (อ่านเท่านั้น)
   Tools: Gmail MCP (มีอยู่แล้ว)
   Approval: —
 
@@ -240,6 +243,7 @@ User: "ไทย, ทุกฉบับ, ไม่ต้อง log"
 Build.
   ## Quick Spec: mail-summarizer
   ...
+  Authority: Read-only
   Approval: Confirmed via Quick
 ```
 
@@ -330,12 +334,18 @@ is insufficient (complex integrations, ecosystem impact, or unclear scope).
 
   **Rule:** Propose a **specific tool if one already exists** in the codebase.
   Only propose a **category** when no existing tool fits.
+  **แต่:** ถ้า tool ที่มีอยู่ **mismatch** กับความต้องการ (เช่น ต้อง local doc search
+  แต่มีแค่ Exa web search) — ห้าม force-fit **Mark as partial fit or gap**
+  และเสนอ category ที่ตรงกว่า
 
   ```
   ✅ "Uses Exa MCP for web search — already configured"
+  ✅ "Exa MCP มีอยู่สำหรับ web search แต่ work log search ควรใช้
+      Obsidian + grep แทน — เป็น partial fit สำหรับ external search"
   ✅ "No existing vector DB found. Needs a semantic search tool
       such as Chroma or Qdrant."
   ❌ "Needs a knowledge retrieval tool" (vague — Exa exists, use it)
+  ❌ "Uses Exa MCP for everything" (force-fit — Exa ไม่เหมาะกับ local search)
   ```
 
   **Tool categories (reference for gaps):**
@@ -749,7 +759,8 @@ Build  →  Run test prompts  →  Review results
 
 ## Related
 
-- [`templates/agent-spec.md`](templates/agent-spec.md) — output template (single source of truth)
+- [`templates/quick-spec.md`](templates/quick-spec.md) — Quick layer output (6-field fixed format)
+- [`templates/agent-spec.md`](templates/agent-spec.md) — Standard+ layer output (full template)
 - [`references/deep-critical.md`](references/deep-critical.md) — Deep & Critical layer details
 - [`idea-to-architecture-agent`](https://github.com/aetox-skills/idea-to-architecture-agent)
 - [`senior-architect-agent`](https://github.com/aetox-skills/senior-architect-agent)

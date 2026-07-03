@@ -5,7 +5,8 @@ Layer: [Quick / Standard / Deep / Critical]
 Archetype: [System / Creative / Developer / Scribe / Specialist / Orchestrator / Researcher / Game]
 Status: [Proposed / Approved / In Progress / Built / Approved via Quick]
 
-> **Quick layer:** fill only fields that have values. Skip empty sections.
+> **Quick layer:** use [`templates/quick-spec.md`](quick-spec.md) instead.
+>   This full template is for Standard+ layers only.
 > **Diff spec (modifying existing):** include only changed fields.
 >   Mark unchanged as `—` (no change).
 

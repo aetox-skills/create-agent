@@ -126,7 +126,7 @@ skill("create-agent")
   │ QUICK (DEFAULT) │   │ STANDARD / DEEP / CRITICAL  │
   │                 │   │                             │
   │ 3. INFER →      │   │ 3. PRESENT DRAFT            │
-  │    PRESENT      │   │   Infer spec + apply skip   │
+  │    PRESENT      │   │   Infer spec + apply min    │
   │    DRAFT        │   │   → 1-page draft            │
   │   Infer spec →  │   │   → user marks up           │
   │   เสนอ condensed│   └─────────────┬───────────────┘
@@ -198,7 +198,8 @@ create-agent/
 ├── references/
 │   └── deep-critical.md   ← Deep & Critical layer details (เปิดเมื่อจำเป็น)
 ├── templates/
-│   └── agent-spec.md      ← output template (single source of truth)
+│   ├── quick-spec.md       ← Quick layer output (6-field fixed format)
+│   └── agent-spec.md       ← Standard+ layer output (full template)
 ├── INSTALL.md             ← วิธีติดตั้งแต่ละ platform
 ├── CHANGELOG.md           ← ประวัติการเปลี่ยนแปลง
 └── LICENSE                ← MIT

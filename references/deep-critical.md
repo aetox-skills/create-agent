@@ -6,6 +6,25 @@
 
 ---
 
+## Entry Checklists
+
+### Promote to Deep if any:
+- [ ] Agent communicates with other agents or services
+- [ ] Agent reads/writes to shared resources (DB, filesystem, APIs)
+- [ ] Agent has 2+ external integrations (MCPs, APIs, tools)
+- [ ] Agent behavior depends on runtime state or environment
+- [ ] Multiple failure modes need explicit handling
+
+### Promote to Critical if any:
+- [ ] Agent writes production data
+- [ ] Agent handles auth / PII / payment
+- [ ] Agent can trigger external side effects (email, deploy, billing)
+- [ ] Agent costs significant tokens per call
+- [ ] Agent runs on a schedule autonomously
+- [ ] Agent deploys to production
+
+---
+
 ## Layer 3 — Deep
 
 For complex agents with multiple integrations, tools, or ecosystem dependencies.
