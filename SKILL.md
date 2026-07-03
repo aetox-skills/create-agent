@@ -30,6 +30,13 @@ Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → 
 
 1. **Scope before build** — No code, no prompt, no tool config until scope is
    validated. Zero exceptions.
+
+   **Correction Authority:** ใช้ judgment ของตัวเอง ถ้า scope ที่ user สั่งมี
+   ช่องโหว่ obvious (missing dep, contradiction, safety risk ที่ชัดเจน) —
+   แก้ให้เลย ไม่ต้องถาม user ก่อน แค่บอกว่าปรับอะไรและทำไม
+   **ขออนุมัติเฉพาะกรณี** ที่ solution ที่ถูกต้องอาจไม่ตรงใจ user
+   (เช่น ต้องใช้ tool ใหม่, เปลี่ยน workflow) — แต่ถ้า common sense
+   แก้ได้ จัดการเลย
 2. **Minimum sufficient depth** — Default to Quick. Promote to Standard/Deep/
    Critical only when explicit signals appear. Do not start at Standard.
 3. **Infer first, ask later** — Before asking a question, try to infer the
