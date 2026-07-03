@@ -26,16 +26,16 @@ Sharpen Fuzzy Language, Concrete Scenarios, and Cross-Reference.
 
 ## Use When
 
-- พี่ Mike บอกว่า "สร้าง agent ตัวนี้ให้หน่อย"
-- ต้องออกแบบ agent ใหม่ ตั้งแต่ identity → capabilities → ecosystem
-- ปรับปรุง agent ที่มีอยู่ ต้องการ scope ใหม่
-- สร้าง spec agent เพื่อให้ agent อื่นหรือคนอื่นมาสร้างต่อ
+- คุณต้องการออกแบบ agent ใหม่ ตั้งแต่ identity → capabilities → ecosystem
+- ต้องการปรับปรุง agent ที่มีอยู่ ต้องการ scope ใหม่
+- ต้องสร้าง agent spec เพื่อส่งต่อให้ทีมหรือ AI agent อื่นมาสร้างต่อ
+- โปรเจคที่ต้องการ agent design review ก่อนลงมือ implement
 
 ## Do Not Use When
 
 - แค่แก้ prompt เล็กน้อยใน agent ที่มีอยู่แล้ว
 - งาน DevOps หรือ deploy ที่ไม่เกี่ยวกับ agent design
-- งานทั่วไปที่ steward ทำอยู่แล้ว (research, git, config)
+- งานระบบทั่วไป (research, git, config)
 
 ## Relationship To Other Aetox Skills
 
@@ -66,7 +66,7 @@ skill("create-agent")
 
 ```
 create-agent/
-├── README.md        ← อยู่นี่
+├── README.md        ← ไฟล์นี้
 ├── SKILL.md         ← ตัวสกิล (รวม Scope Interview + Grill Methodology)
 ├── INSTALL.md       ← วิธีติดตั้งแต่ละ platform
 ├── CHANGELOG.md     ← ประวัติการเปลี่ยนแปลง
