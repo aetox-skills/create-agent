@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.4.1 (2026-07-03)
+
+- **Turbo Mode (Layer 0)** — for dead-simple agents: infer → confirm → build
+- **Infer-First rule** — fill spec from context + codebase before asking anything
+- **Grill Methodology → Questioning Technique** — retitled and simplified; Infer-First (T0) as primary
+- **Workflow diagram updated** — Turbo path skips approval gate; Standard path retains it
+- **Layer selection table** — added Turbo column with entry signals
+- **SKILL.md template** — minor refinements (frontmatter trim, dimension order, rule#2 clarity)
+- All changes respond to Prof./อาจารย์ feedback: reduce friction, infer before asking, turbo for small tasks
+
 ## v0.4.0 (2026-07-03)
 
 - **Agent Anatomy (Progressive Disclosure)** — 3-level structure: Identity → Instruction → Resource

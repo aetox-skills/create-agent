@@ -20,6 +20,7 @@ Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → 
 It operates at **4 depth layers**:
 
 ```
+Layer 0 — Turbo       (infer + confirm + build — สำหรับของง่ายๆ)
 Layer 1 — Sketch      (5 quick questions for small changes)
 Layer 2 — Standard    (full 8-domain Scope Interview)
 Layer 3 — Deep        (adds ecosystem map + dependency trace + learning path)
@@ -99,6 +100,7 @@ skill("create-agent")
 ┌───────────────────────────────────────────────────┐
 │ ② SELECT LAYER                                   │
 │ ─────────────────────────────────────────────    │
+│ · Turbo    → infer + confirm + build (ของเล็ก)   │
 │ · Sketch   → 5 คำถาม ปรับเล็กน้อย                │
 │ · Standard → 8-domain full interview (default)   │
 │ · Deep     → Standard + ecosystem map + deps     │
@@ -147,11 +149,10 @@ skill("create-agent")
 │                           efficiency, quality,    │
 │                           business)              │
 │                                                  │
-│ ── ใช้ Grill Methodology ตลอด interview: ──     │
+│ ── Infer-First: fill spec จากที่มีก่อนถาม ────  │
+│    · สังเกต Infer-First เป็น primary technique   │
 │    · Decision Tree Walk    (ถามทีละขั้น)          │
-│    · One at a Time         (รอตอบก่อน)            │
 │    · Recommend an Answer   (ไม่ถามปลายเปิด)       │
-│    · Codebase-First        (ค้นก่อนถาม)           │
 │    · Sharpen Fuzzy Language(คำคลุมเครือ → ชัด)   │
 │    · Concrete Scenarios    (ยกเคสสมมุติ)          │
 │    · Cross-Reference       (เทียบ agent ที่มี)    │
@@ -212,8 +213,9 @@ skill("create-agent")
 ### One-liner Summary
 
 ```
-Intent Gate → Select Archetype + Layer → Scope Interview (8 domains + Tool Mapping)
-→ Propose Spec → Approval Gate → Build / Handoff → Test Plan → Iteration Loop
+Turbo path:   Infer spec → Confirm → Build
+Standard path: Intent Gate → Select Archetype + Layer → Scope Interview
+               → Propose Spec → Approval Gate → Build / Handoff → Test Plan → Iteration Loop
 ```
 
 ตลอดทั้ง process: **Agent Anatomy** เป็นกรอบโครงสร้าง, **Grill Methodology** เป็นเทคนิคการถาม, **Checkpoint Gates** คอยกันไม่ให้ข้ามขั้น

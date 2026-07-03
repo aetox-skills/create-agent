@@ -32,22 +32,21 @@ Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → 
    validated. Zero exceptions.
 2. **Minimum sufficient depth** — Select the lightest layer that can safely
    define the agent. Promote only when explicit signals appear.
-3. **Codebase-first** — If the answer to a question exists in config, docs,
+3. **Infer first, ask later** — Before asking a question, try to infer the
+   answer from context, codebase, existing agents, and what the user already
+   said. Only ask about what remains genuinely uncertain.
+4. **Codebase-first** — If the answer to a question exists in config, docs,
    or existing agents — go find it. Do not ask.
-4. **One question at a time** — Ask, wait for answer, then ask the next.
+5. **One question at a time** — Ask, wait for answer, then ask the next.
    Do not dump 10 questions at once.
-5. **Recommend, don't open-ended** — Every question must include a
+6. **Recommend, don't open-ended** — Every question must include a
    recommended answer. Give something to react to.
-6. **State explicit** — Never proceed on implicit understanding.
+7. **State explicit** — Never proceed on implicit understanding.
    If it's not written, it's not agreed.
-7. **Personality is a requirement** — Every agent needs a defined character.
-   Default is neutral professional. Explicitly state if different.
-8. **Measure before you claim success** — Every agent needs at least 3 success
-   metrics before you call it done.
-9. **Stop on signal** — When the user says "enough" or "stop" — stop.
+8. **Stop on signal** — When the user says "enough" or "stop" — stop.
    Do not argue, do not push for more.
-10. **Output an Agent Spec** — Every session produces a validated spec, even
-    at Sketch layer.
+9. **Output an Agent Spec** — Every session produces a validated spec, even
+    at Turbo or Sketch layer.
 
 ---
 
@@ -187,18 +186,19 @@ Layer  Critical ──── Deep + Risk Model + Cost Model + Safety Gates
 
 Choose the layer based on the archetype and these signals:
 
-| Signal | Sketch | Standard | Deep | Critical |
-|--------|--------|----------|------|----------|
-| Add 1-2 capabilities to existing agent | ✅ | — | — | — |
-| New agent, single purpose, no deps | — | ✅ | — | — |
-| New agent, 1-2 external integrations | — | ✅ | ✅ | — |
-| Agent in multi-agent ecosystem | — | — | ✅ | ✅ |
-| Agent handles payment / auth / PII | — | — | — | ✅ |
-| Agent deploys to production | — | — | — | ✅ |
-| Agent costs significant tokens per call | — | — | — | ✅ |
-| Safety or compliance implications | — | — | — | ✅ |
-| Archetype = Orchestrator | — | — | — | ✅ |
-| Archetype = Specialist | — | — | ✅ | — |
+| Signal | Turbo | Sketch | Standard | Deep | Critical |
+|--------|:----:|:------:|:--------:|:----:|:--------:|
+| Simple agent, 1 capability, clear scope | ✅ | — | — | — | — |
+| Add 1-2 capabilities to existing agent | — | ✅ | — | — | — |
+| New agent, single purpose, no deps | — | — | ✅ | — | — |
+| New agent, 1-2 external integrations | — | — | ✅ | ✅ | — |
+| Agent in multi-agent ecosystem | — | — | — | ✅ | ✅ |
+| Agent handles payment / auth / PII | — | — | — | — | ✅ |
+| Agent deploys to production | — | — | — | — | ✅ |
+| Agent costs significant tokens per call | — | — | — | — | ✅ |
+| Safety or compliance implications | — | — | — | — | ✅ |
+| Archetype = Orchestrator | — | — | — | — | ✅ |
+| Archetype = Specialist | — | — | — | ✅ | — |
 
 **Default to Standard.** Promote only when explicit signals are present.
 Do not promote because of uncertainty alone.
@@ -211,6 +211,59 @@ Promotion note:
   Trigger: [what you found]
   Evidence: [where you found it]
   Risk of staying: [why lower layer is unsafe]
+```
+
+---
+
+## Layer 0 — Turbo
+
+For dead-simple agents. User says "want agent that does X" and the scope is
+obvious. No interview needed — just infer, confirm, build.
+
+Don't overthink this layer. If you're unsure whether it fits, use Sketch.
+
+### Entry Criteria
+
+- Agent is new or trivially modified (1-2 capabilities).
+- No external integrations beyond what already exists.
+- No multi-agent coordination.
+- No safety, cost, or compliance risk.
+- The requirements are clear enough that an 8-domain interview would feel
+  like over-engineering.
+
+### Process
+
+```
+1. Infer spec from context    ← อ่านจากที่ user บอก + codebase + existing agents
+2. Confirm with user          ← "นี่คือ spec ที่ผม infer — ตรงไหนแก้บอก"
+3. Build                      ← ไม่ต้องรอ approval
+```
+
+### Output
+
+A condensed Agent Spec. Skip sections that are obvious.
+
+### Example
+
+```
+User: "อยากได้ agent ที่สรุปเมล์ให้หน่อย"
+
+Infer:
+  Archetype: Scribe
+  Capability: read email → bullet summary
+  Tools: Gmail MCP (มีอยู่แล้ว)
+  Risk: ต่ำ, read-only
+  I/O: input = email → output = summary markdown
+  Ecosystem: อยู่กับ steward
+
+Confirm:
+  "Infer มาแบบนี้ — สรุปไทย/อังกฤษ?
+   สรุปทุกฉบับหรือเฉพาะหัวข้อ?
+   เก็บ log ไหม?"
+
+User: "ไทย, ทุกฉบับ, ไม่ต้อง log"
+
+Build.
 ```
 
 ---
@@ -585,38 +638,47 @@ User request
   ┌─────────────────────────────────────────────┐
   │          2. SELECT ARCHETYPE + LAYER        │
   │  Use archetype catalog → pick archetype     │
-  │  Use signal table → pick Sketch/Standard    │
-  │  /Deep/Critical. Write justification.       │
+  │  Use signal table → pick Turbo / Sketch /   │
+  │  Standard / Deep / Critical.                │
+  │  Write justification.                       │
   └─────────────────────────────────────────────┘
     │
-    ▼
-  ┌─────────────────────────────────────────────┐
-  │          3. SCOPE INTERVIEW                 │
-  │  Depth depends on layer + archetype:        │
-  │  Sketch → 5 questions                       │
-  │  Standard → 8-domain interview              │
-  │  Deep → + Ecosystem + deps + learning       │
-  │  Critical → + Risk + Cost + Safety          │
-  │                                             │
-  │  Technique: Grill Methodology               │
-  │  Each domain weighted by archetype          │
-  └─────────────────────────────────────────────┘
-    │
-    ▼
-  ┌─────────────────────────────────────────────┐
-  │          4. PROPOSE SPEC                    │
-  │  Write Agent Spec at layer depth.           │
-  │  Include personality examples, metrics,     │
-  │  deliverables.                              │
-  │  Present to user.                           │
-  └─────────────────────────────────────────────┘
-    │
-    ▼
-  ┌─────────────────────────────────────────────┐
-  │          5. APPROVAL GATE                   │
-  │  User reviews spec → approve / revise /     │
-  │  reject. No build until approved.           │
-  └─────────────────────────────────────────────┘
+    ├── Layer = Turbo ──────────────────────────┤
+    │                                           │
+    │  ┌─────────────────────────────────────┐  │
+    │  │  3. INFER + CONFIRM                │  │
+    │  │  Infer spec จาก context + codebase  │  │
+    │  │  → เสนอ spec → user confirm        │  │
+    │  │  → BUILD (no approval gate)        │  │
+    │  └─────────────────────────────────────┘  │
+    │                                           │
+    ├── Layer = Sketch / Standard / Deep / Critical ─┤
+    │                                               │
+    │  ┌─────────────────────────────────────────┐  │
+    │  │  3. SCOPE INTERVIEW                     │  │
+    │  │  Depth depends on layer:                │  │
+    │  │  Sketch → infer + 5 questions           │  │
+    │  │  Standard → 8-domain interview          │  │
+    │  │  Deep → + Ecosystem + deps + learning   │  │
+    │  │  Critical → + Risk + Cost + Safety      │  │
+    │  │                                         │  │
+    │  │  Infer-first: fill what you can before  │  │
+    │  │  asking. Only ask about uncertainty.    │  │
+    │  └─────────────────────────────────────────┘  │
+    │                                               │
+    │  ┌─────────────────────────────────────────┐  │
+    │  │  4. PROPOSE SPEC                        │  │
+    │  │  Write Agent Spec at layer depth.       │  │
+    │  │  Present to user.                       │  │
+    │  └─────────────────────────────────────────┘  │
+    │                                               │
+    │  ┌─────────────────────────────────────────┐  │
+    │  │  5. APPROVAL GATE                       │  │
+    │  │  User reviews → approve / revise /      │  │
+    │  │  reject. No build until approved.       │  │
+    │  └─────────────────────────────────────────┘  │
+    │                                               │
+    └───────────────────────────────────────────────┘
     │
     ▼
   ┌─────────────────────────────────────────────┐
@@ -756,91 +818,78 @@ Keep it light — bullet points, not essays.
 
 ---
 
-## Grill Methodology (How to Ask)
+## Questioning Technique
 
-Borrowed from `grill-with-docs`. Use these techniques during the Scope Interview.
+Use these techniques when you need to ask during the Scope Interview.
+The goal is **clarify scope**, not grill the user. Infer first, ask only
+what remains genuinely uncertain.
+
+### T0: Infer-First (Primary)
+
+**Before asking anything, try to fill the spec from what you already know.**
+Then ask only the gaps.
+
+```
+User: "อยากได้ agent ที่สรุปเมล์หน่อย"
+
+Infer (จาก context + codebase):
+  Archetype: Scribe (document/summary)
+  Capability: read mail → bullet summary
+  Tools: Gmail MCP (มีอยู่แล้วใน opencode.jsonc)
+  Risk: ต่ำ, read-only
+  Ecosystem: อยู่กับ steward
+
+Ask (เฉพาะที่ยัง uncertain):
+  "สรุปภาษาไทยหรืออังกฤษ? สรุปทุกฉบับหรือเฉพาะหัวข้อ?"
+```
+
+**At Turbo and Sketch layers,** infer the entire spec and just confirm.
+No need to walk through domains.
 
 ### T1: Decision Tree Walk
 
-Ask one question at a time. Each question follows from the previous answer.
-Do not jump across domains.
+เมื่อต้องถามจริงๆ — ถามทีละขั้น อย่ากระโดดข้าม domain
 
 ```
 Identity → Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → Lifecycle → Risk/Metrics
 ```
 
-Stay in the current domain until it's resolved. Only move to the next domain
-when the current one has no more open questions.
+### T2: Recommend an Answer
 
-### T2: One at a Time
-
-Ask exactly one question. Wait for the answer. Then ask the next.
-Exceptions:
-- Questions that can be answered from codebase → search first, don't ask.
-- Questions about established patterns → check existing agents for precedent.
-
-### T3: Recommend an Answer
-
-Every question includes a recommendation. Give the user something to agree,
-reject, or modify.
+ทุกคำถามควรมี recommendation ให้ user react — อย่าถามปลายเปิด
 
 ```
-❌ "What personality should this agent have?"
-✅ "I suggest a neutral, professional Thai tone —
-    formal enough for documentation, relaxed enough for chat.
-    Or would you prefer something else?"
+❌ "personality แบบไหน?"
+✅ "แนะนำ tone กลางๆ ทางการ — หรืออยากได้แนวอื่น?"
 ```
 
-### T4: Codebase-First
+### T3: Sharpen Fuzzy Language
 
-Before asking any question, check if the answer exists in:
+เวลา user พูดคำคลุมเครือ — ถามให้ชัด
 
-- `index.md` — existing agents, system structure
-- `opencode.jsonc` — MCPs, plugins, config
-- `AGENTS.md` — agent rules
-- `CONTEXT.md` — environment, paths
-- `PROFILE.md` — user preferences
-- `skill-library/` — available skills
-- Other agent configs for pattern reference
-
-If found → use it. If not found → report "not found in codebase" → then ask.
-
-### T5: Sharpen Fuzzy Language
-
-When the user uses vague terms, pin them down.
-
-| Vague phrase | Sharpen to |
+| คำคลุมเครือ | ให้ชัดเป็น |
 |-------------|-----------|
-| "manage" | read? create? update? delete? moderate? |
+| "manage" | read? create? update? delete? |
 | "handle" | process? route? store? forward? |
-| "data" | what type? what format? what size? |
-| "user" | who exactly? customer? admin? member? |
-| "system" | which system? agent? platform? service? |
-| "integrate" | API call? webhook? shared DB? event bus? |
-| "personality" | see Domain 1: tone, language, verbosity, style, vibe |
-| "remember" | session memory? persistent? what exactly? |
+| "user" | customer? admin? member? |
+| "remember" | session memory? persistent? |
 
-### T6: Concrete Scenarios
+### T4: Concrete Scenarios
 
-When discussing behavior, boundaries, or failure modes — propose a concrete
-scenario.
+เมื่อต้อง discuss behavior หรือ failure mode — ยก scenario ให้เห็นภาพ
 
 ```
-Question: "What if this agent receives a request it can't fulfill?"
-Scenario: "Example: Agent-X only reads files but someone asks it to write.
-           Should it: (a) refuse politely, (b) suggest another agent,
-           (c) escalate to the user, (d) throw an error?"
+"ถ้า agent รับ request ที่ทำไม่ได้ — ควรปฏิเสธ? แนะนำ agent อื่น? หรือส่งต่อไป?"
 ```
 
-### T7: Cross-Reference
+### T5: Cross-Reference
 
-When the user proposes a behavior or capability — check existing agents
-for precedent. If an existing agent does something similar, reference it.
+เทียบกับ agent ที่มีอยู่ก่อน — มีใครทำ类似 นี้แล้วหรือยัง?
 
 ```
-User: "This agent should auto-summarize daily."
-Cross-ref: "Steward has a daily journal pattern in index.md —
-            should we follow that format, or design a new one?"
+User: "อยากให้ agent สรุป daily auto"
+Cross-ref: "Steward มี daily journal pattern อยู่แล้วใน index.md —
+            ใช้ format เดียวกัน หรือออกแบบใหม่?"
 ```
 
 ---
