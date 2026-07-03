@@ -31,23 +31,21 @@ Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → 
 It operates at **4 depth layers**:
 
 ```
-Layer 0 — Turbo       (infer + confirm + build — สำหรับของง่ายๆ)
-Layer 1 — Sketch      (5 quick questions for small changes)
-Layer 2 — Standard    (full 8-domain Scope Interview)
-Layer 3 — Deep        (adds ecosystem map + dependency trace + learning path)
-Layer 4 — Critical    (adds risk model + cost model + safety gates + compliance)
+Layer 1 — Quick      (infer + confirm + build — สำหรับของง่ายๆ)
+Layer 2 — Standard   (full 8-domain Scope Interview — default)
+Layer 3 — Deep       (Standard + ecosystem map + dependency trace)
+Layer 4 — Critical   (Deep + risk model + cost model + safety gates)
 ```
 
-With an **Archetype System** (8 archetypes) that adjusts interview weight
-per domain — a Developer agent needs different depth than a Scribe.
+With an **Archetype System** (8 archetypes) with **skip lists** — telling
+each archetype which interview domains to skip, not relative weights.
 
 Plus:
-- **Personality framework** — tone, language, verbosity, style, vibe, examples
-- **Critical Rules** with concrete scenarios — not just "don't do X"
-- **Success Metrics** — every agent must have 3+ measurable KPIs
-- **Memory & Learning** — session, persistent, knowledge accumulation
-- **Deliverable specs** — concrete output templates per capability
-- Checkpoint gates (Intent → Scope → Spec → Build) to prevent skipping
+- **Iron Rules** — scope-first, infer-before-ask, minimum-sufficient-depth
+- **Infer-First questioning** — fill spec from context before asking
+- **Quick path** — for trivial agents: infer → confirm → build, no gate
+- **Diff spec** — when modifying, output only changed fields
+- **Checkpoint gates** (Intent → Spec) — light enough for daily use
 
 ## Use When
 
@@ -103,7 +101,7 @@ skill("create-agent")
 │ · Identify archetype (System / Creative /        │
 │   Developer / Scribe / Specialist / Orchestrator │
 │   / Researcher / Game)                           │
-│ · Check codebase (มี agent อะไรอยู่แล้ว?)         │
+│ · Check codebase (skip if greenfield)            │
 │ · Record goal + constraint                       │
 └───────────────────────────────────────────────────┘
                       │
@@ -111,84 +109,39 @@ skill("create-agent")
 ┌───────────────────────────────────────────────────┐
 │ ② SELECT LAYER                                   │
 │ ─────────────────────────────────────────────    │
-│ · Turbo    → infer + confirm + build (ของเล็ก)   │
-│ · Sketch   → 5 คำถาม ปรับเล็กน้อย                │
+│ · Quick    → infer + confirm + build (ของเล็ก)   │
 │ · Standard → 8-domain full interview (default)   │
 │ · Deep     → Standard + ecosystem map + deps     │
 │ · Critical → Deep + risk + cost + safety         │
 │ เขียน justification เพราะเลือก layer นี้        │
 └───────────────────────────────────────────────────┘
                       │
-                      ▼
-┌───────────────────────────────────────────────────┐
-│ ③ SCOPE INTERVIEW (8 domains)                    │
-│ ─────────────────────────────────────────────    │
-│                                                  │
-│  [1] IDENTITY         ─── name, archetype,       │
-│                          role, persona (tone,    │
-│                          language, vibe +        │
-│                          ตัวอย่างประโยค)          │
-│                                                  │
-│  [2] CAPABILITIES     ─── list capabilities      │
-│       + BOUNDARIES        ranked, แต่ละตัวมี     │
-│                            trigger + output      │
-│                            + failure mode        │
-│                          Boundaries = Critical   │
-│                          Rules (Rule + Scenario  │
-│                          + Consequence)          │
-│                                                  │
-│       │  └─ TOOL MAPPING ⬅── หลัง capabilities    │
-│       │     ชัด → แต่ละ capability → tool         │
-│       │     category → search codebase → propose │
-│       │     categories (ไม่指名 tools)           │
-│                                                  │
-│  [3] I/O + DELIVERABLES ── input/output format   │
-│                            deliverables template  │
-│                                                  │
-│  [4] ECOSYSTEM         ─── platform, team,       │
-│                          dependencies, comms     │
-│                                                  │
-│  [5] MEMORY & LEARNING ─── session, persistent   │
-│                          knowledge accumulation  │
-│                                                  │
-│  [6] LIFECYCLE         ─── trigger, duration,    │
-│                          maintenance, retirement │
-│                                                  │
-│  [7] RISK + METRICS    ─── failure modes,        │
-│                          safety, 3+ KPIs         │
-│                          (accuracy, speed,        │
-│                           efficiency, quality,    │
-│                           business)              │
-│                                                  │
-│ ── Infer-First: fill spec จากที่มีก่อนถาม ────  │
-│    · สังเกต Infer-First เป็น primary technique   │
-│    · Decision Tree Walk    (ถามทีละขั้น)          │
-│    · Recommend an Answer   (ไม่ถามปลายเปิด)       │
-│    · Sharpen Fuzzy Language(คำคลุมเครือ → ชัด)   │
-│    · Concrete Scenarios    (ยกเคสสมมุติ)          │
-│    · Cross-Reference       (เทียบ agent ที่มี)    │
-└───────────────────────────────────────────────────┘
-                      │
-                      ▼
-┌───────────────────────────────────────────────────┐
-│ ④ PROPOSE SPEC                                   │
-│ ─────────────────────────────────────────────    │
-│ · เขียน Agent Spec 14 sections                    │
-│ · Personality examples                           │
-│ · Tool categories + proposals                    │
-│ · Deliverables + format                          │
-│ · Success metrics                                │
-└───────────────────────────────────────────────────┘
-                      │
-                      ▼
-┌───────────────────────────────────────────────────┐
-│ ⑤ APPROVAL GATE                                  │
-│ ─────────────────────────────────────────────    │
-│ · ผู้ใช้ดู spec                                  │
-│ · Approve / Revise / Reject                      │
-│ · No build until approved                        │
-└───────────────────────────────────────────────────┘
-                      │
+          ┌───────────┴───────────┐
+          ▼                       ▼
+  ┌─────────────────┐   ┌─────────────────────────────┐
+  │ QUICK PATH      │   │ STANDARD / DEEP / CRITICAL  │
+  │                 │   │                             │
+  │ 3. INFER +      │   │ 3. SCOPE INTERVIEW          │
+  │    CONFIRM      │   │   · Apply archetype skip    │
+  │   Infer spec →  │   │     list                    │
+  │   เสนอ → user   │   │   · 8 domains (skip per    │
+  │   confirm →     │   │     archetype)              │
+  │   BUILD         │   │   · Deep/Critical = extra   │
+  │                 │   │     steps per references/   │
+  └─────────────────┘   │     deep-critical.md        │
+          │             │                             │
+          │             │ 4. PROPOSE SPEC             │
+          │             │   · templates/agent-spec.md │
+          │             └─────────────┬───────────────┘
+          │                           │
+          │             ┌─────────────▼───────────────┐
+          │             │ 5. APPROVAL GATE            │
+          │             │   · Approve / Revise /      │
+          │             │     Reject                  │
+          │             │   · No build until approved │
+          │             └─────────────┬───────────────┘
+          │                           │
+          └───────────┬───────────────┘
                       ▼
 ┌───────────────────────────────────────────────────┐
 │ ⑥ BUILD / HANDOFF                                │
@@ -202,9 +155,7 @@ skill("create-agent")
 │ ⑦ AGENT TEST PLAN                                │
 │ ─────────────────────────────────────────────    │
 │ · เขียน test prompts สำหรับแต่ละ capability        │
-│ · Happy path test → ผ่าน                          │
-│ · Boundary test (Critical Rules) → ผ่าน            │
-│ · Edge case test (Layer 3+)                      │
+│ · Happy path test, Boundary test, Edge case       │
 └───────────────────────────────────────────────────┘
                       │
                       ▼
@@ -212,9 +163,7 @@ skill("create-agent")
 │ ⑧ ITERATION LOOP (วนจน stable)                   │
 │ ─────────────────────────────────────────────    │
 │ · Run test prompts                                │
-│ · FAIL → identify gap                            │
-│    ├─ Scope gap? → กลับไป redesign spec           │
-│    └─ Behavior gap? → fix instruction/rules       │
+│ · FAIL → identify gap → redesign / fix            │
 │ · PASS → deploy                                   │
 │ · 3 redesigns fail → escalate                     │
 │ · ผู้ใช้บอกพอ → stop                             │
@@ -224,25 +173,30 @@ skill("create-agent")
 ### One-liner Summary
 
 ```
-Turbo path:   Infer spec → Confirm → Build
-Standard path: Intent Gate → Select Archetype + Layer → Scope Interview
+Quick path:    Infer spec → Confirm → Build
+Standard path: Intent Gate → Select Layer → Scope Interview
                → Propose Spec → Approval Gate → Build / Handoff → Test Plan → Iteration Loop
 ```
 
-ตลอดทั้ง process: **Agent Anatomy** เป็นกรอบโครงสร้าง, **Questioning Technique** เป็นเทคนิคการถาม (Infer-First ก่อน), **Checkpoint Gates** คอยกันไม่ให้ข้ามขั้น
+ตลอดทั้ง process: **Iron Rules** (scope-first, infer-first), **Questioning Technique** (Infer-First + Recommend), **Checkpoint Gates** (Intent → Spec)
 
 ## Repository Structure
 
 ```
 create-agent/
-├── README.md        ← ไฟล์นี้
-├── SKILL.md         ← ตัวสกิล (รวม Scope Interview + Grill Methodology)
-├── INSTALL.md       ← วิธีติดตั้งแต่ละ platform
-├── CHANGELOG.md     ← ประวัติการเปลี่ยนแปลง
-├── LICENSE          ← MIT
-└── templates/
-    └── agent-spec.md ← template output spec
+├── README.md              ← ไฟล์นี้
+├── SKILL.md               ← ตัวสกิล (core ~600 lines — Quick + Standard)
+├── references/
+│   └── deep-critical.md   ← Deep & Critical layer details (เปิดเมื่อจำเป็น)
+├── templates/
+│   └── agent-spec.md      ← output template (single source of truth)
+├── INSTALL.md             ← วิธีติดตั้งแต่ละ platform
+├── CHANGELOG.md           ← ประวัติการเปลี่ยนแปลง
+└── LICENSE                ← MIT
 ```
+
+**Token budget:** Core SKILL.md ~16KB (~4K tokens). References ~4KB (~1K tokens).
+โหลด references/ เฉพาะตอนใช้ Deep/Critical layer — ลด token waste สำหรับ Quick/Standard.
 
 ## Topics
 

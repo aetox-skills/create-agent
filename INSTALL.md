@@ -29,6 +29,8 @@ skill("create-agent")
 
 ก็อปปี้ content จาก `SKILL.md` ใส่ system prompt หรือ instruction ของ agent
 
+ถ้าต้องการ Deep หรือ Critical layer — ก็อปปี้ `references/deep-critical.md` ด้วย
+
 ## Verify
 
 ```bash

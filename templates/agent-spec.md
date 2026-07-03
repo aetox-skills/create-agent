@@ -1,19 +1,13 @@
 # Agent Spec: [Name]
 
 ## v[0.1.0] — [YYYY-MM-DD]
-Layer: [Sketch / Standard / Deep / Critical]
+Layer: [Quick / Standard / Deep / Critical]
 Archetype: [System / Creative / Developer / Scribe / Specialist / Orchestrator / Researcher / Game]
-Status: [Proposed / Approved / In Progress / Built]
+Status: [Proposed / Approved / In Progress / Built / Approved via Quick]
 
----
-
-## Agent Anatomy
-
-| Layer | Content | Loading Behavior |
-|-------|---------|------------------|
-| Identity | name, description, trigger | Always visible |
-| Instruction | role, rules, workflow, output | Loaded on activation |
-| Resource | docs, skills, tool refs, evals | Loaded on demand |
+> **Quick layer:** fill only fields that have values. Skip empty sections.
+> **Diff spec (modifying existing):** include only changed fields.
+>   Mark unchanged as `—` (no change).
 
 ---
 
@@ -23,19 +17,8 @@ Status: [Proposed / Approved / In Progress / Built]
 - **Archetype:**
 - **Role:** This agent [does X] for [user Y] so that [outcome Z].
 - **Persona:**
-
-| Dimension | Value |
-|-----------|-------|
-| Tone | |
-| Language | |
-| Verbosity | |
-| Style | |
-| Vibe | |
-
-**Example phrases:**
-- [context]: "[example phrase]"
-- [context]: "[example phrase]"
-
+  - **Tone:** [formal / casual / technical / playful / authoritative / warm]
+  - **Example phrase:** "[what it actually sounds like in conversation]"
 - **Knows context:**
 - **Narrowest job:**
 
@@ -52,7 +35,6 @@ Status: [Proposed / Approved / In Progress / Built]
 
 | Rule | Scenario | Consequence |
 |------|----------|-------------|
-| | | |
 | | | |
 
 ### Authority Level
@@ -76,7 +58,6 @@ The agent must stop when:
 - [ ] Requested action exceeds scope
 - [ ] Another agent owns the responsibility
 - [ ] Required input is missing
-- [ ] Validation cannot be performed
 - [ ] Safety, data, permission, or cost risk appears
 
 ### Delegation
@@ -89,10 +70,9 @@ The agent must stop when:
 
 ## Tool Mapping
 
-| Capability | Tool Category Needed | Existing Option | Gap | Recommendation |
-|-----------|----------------------|-----------------|-----|----------------|
-| | | | | |
-| | | | | |
+| Capability | Tool / Category | Existing? | Gap | Recommendation |
+|-----------|----------------|-----------|-----|----------------|
+| | | ✅ / ❌ | | |
 
 ---
 
@@ -107,7 +87,6 @@ The agent must stop when:
 
 | Deliverable | Format | Template/Idea |
 |-------------|--------|---------------|
-| | | |
 | | | |
 
 ---
@@ -133,7 +112,6 @@ The agent must stop when:
 
 | Area | Existing Owner | Conflict? | Resolution |
 |------|----------------|-----------|------------|
-| | | | |
 | | | | |
 
 ---
@@ -176,10 +154,10 @@ The agent must stop when:
 
 ## Success Metrics
 
+Optional. Add as many as useful — 1 is fine.
+
 | Metric | Type | Target | Measure | Alert If |
 |--------|------|--------|---------|----------|
-| | | | | |
-| | | | | |
 | | | | | |
 
 ### Cost Model (Layer 4+)
@@ -195,7 +173,6 @@ The agent must stop when:
 
 | Capability | Test Prompt | Expected Output | Edge Cases |
 |-----------|-------------|-----------------|------------|
-| | | | |
 | | | | |
 
 ---
@@ -213,7 +190,7 @@ The agent must stop when:
 ## Iteration Log
 
 | Iteration | Change | Before | After | Test Result | Known Issues |
-|-----------|--------|--------|-------|-------------|--------------|
+|-----------|--------|-------|-------|-------------|--------------|
 | 1 | | | | | |
 | 2 | | | | | |
 

@@ -37,102 +37,33 @@ Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → 
    said. Only ask about what remains genuinely uncertain.
 4. **Codebase-first** — If the answer to a question exists in config, docs,
    or existing agents — go find it. Do not ask.
+   **Greenfield exception:** If no codebase exists (no index.md, AGENTS.md,
+   opencode.jsonc, or existing agents), skip codebase scan and go directly
+   to the interview.
 5. **One question at a time** — Ask, wait for answer, then ask the next.
    Do not dump 10 questions at once.
 6. **Recommend, don't open-ended** — Every question must include a
    recommended answer. Give something to react to.
 7. **State explicit** — Never proceed on implicit understanding.
    If it's not written, it's not agreed.
+   **Quick-layer exception:** User confirmation of an inferred spec counts
+   as explicit agreement. Document it in one line (`Status: Approved via Quick`).
 8. **Stop on signal** — When the user says "enough" or "stop" — stop.
    Do not argue, do not push for more.
 9. **Output an Agent Spec** — Every session produces a validated spec, even
-    at Turbo or Sketch layer.
-
----
-
-## Agent Anatomy (Progressive Disclosure)
-
-Every agent has a layered structure. Not all layers need to be filled at once,
-but understanding the anatomy helps scope the design correctly.
-
-```
-agent/
-├── Level 1: Identity Layer       ← always visible (~50 words)
-│   ├── name
-│   ├── description (when to trigger, what it does)
-│   └── model / platform hint
-│
-├── Level 2: Instruction Layer    ← loaded when agent activates
-│   ├── role & personality
-│   ├── capabilities & boundaries
-│   ├── workflow & rules
-│   └── communication style
-│
-└── Level 3: Resource Layer       ← loaded on demand
-    ├── knowledge & references    (docs, specs, past decisions)
-    ├── tool categories           (types of tools, not specific tools)
-    ├── skill references          (pointers to reusable skills)
-    └── test prompts & evals      (how to verify it works)
-```
-
-### Level 1 — Identity Layer
-This is the **frontmatter**. It determines when the agent is summoned.
-Must answer: "What is this agent, and when should it activate?"
-
-Keep it tight — 1-2 sentences. Include trigger conditions.
-```
-name: code-reviewer
-description: >-
-  Reviews pull requests for security, style, and correctness.
-  Use when a PR is opened, or when asked to review code changes.
-  Do not use for architecture design or system planning.
-```
-
-### Level 2 — Instruction Layer
-This is the **body** of the agent. It defines how the agent behaves.
-Includes personality, capabilities, rules, workflow, output format.
-
-This is the core of the `create-agent` Scope Interview output.
-
-### Level 3 — Resource Layer
-Everything else the agent might need, loaded on demand.
-
-**Knowledge & References:**
-- Domain documentation, past decisions, project conventions
-- Glossary of terms, common patterns, anti-patterns
-- Links to external standards or APIs
-
-**Tool Categories Reference (ดูเพิ่มที่ Domain 2 — Tool Mapping สำหรับ process จริง):**
-
-A complete list of tool categories is in Domain 2 (Capabilities & Boundaries).
-Use that section for the actual tool mapping step. This is just a reminder
-that tool categories exist as Level 3 resources.
-
-Key principle: propose **categories** not specific tools.
-See Domain 2 for examples and process.
-
-**Skill References:**
-- Pointers to reusable skills in `skill-library/` that this agent should load
-- Not inline — just references with when-to-use notes
-
-**Test Prompts & Evals:**
-- See Agent Test Plan section below
+   at Quick layer.
 
 ---
 
 ## Agent Archetype System
 
-Agents are not all the same. Their structure, personality, tools, and
-deliverables follow patterns based on their archetype.
-
-Use this table to understand what type of agent you are designing.
-This informs the Scope Interview — each archetype has different weight
-per domain.
+Agents follow patterns based on their archetype. Use this table to pick the
+right archetype and understand which interview domains to focus on or skip.
 
 ### Archetype Catalog
 
-| # | Archetype | Core Purpose | Default Personality | Typical Tools | Layer |
-|:-:|-----------|-------------|--------------------|--------------|-------|
+| # | Archetype | Core Purpose | Default Personality | Typical Tools | Default Layer |
+|:-:|-----------|-------------|--------------------|--------------|:-------------:|
 | 🛠️ | **System** | Automate, config, maintain | Practical, concise, direct | CLI, filesystem, Docker, git | Standard |
 | 🎨 | **Creative** | Design, visual, motion | Expressive, detail-oriented | Tailwind, GSAP, image APIs | Standard |
 | 💻 | **Developer** | Code, architecture, debug | Technical, precise, thorough | MCPs, linters, test runners | Deep |
@@ -142,18 +73,20 @@ per domain.
 | 🔍 | **Researcher** | Search, analyze, synthesize | Curious, analytical, thorough | Exa, Firecrawl, web tools | Standard |
 | 🎮 | **Game** | Game-specific behavior | Playful, adaptive | Game API, bot framework | Deep |
 
-### How Archetypes Affect the Interview
+### Archetype Skip List
 
-| Interview Domain | System | Creative | Developer | Scribe | Specialist | Orchestrator | Researcher | Game |
-|-----------------|--------|----------|-----------|--------|------------|--------------|------------|------|
-| **Identity** | Medium | **High** | Medium | Medium | **High** | Medium | Low | **High** |
-| **Capabilities** | **High** | Medium | **High** | Medium | **High** | Medium | **High** | Medium |
-| **I/O** | Low | **High** | Medium | **High** | Low | Low | Medium | Medium |
-| **Ecosystem** | **High** | Low | **High** | Low | Medium | **High** | Low | Low |
-| **Lifecycle** | Medium | Low | Medium | Medium | Low | **High** | Low | Medium |
-| **Risk/Metrics** | Medium | Low | Medium | Low | **High** | **High** | Low | Low |
+Don't waste time on domains this archetype doesn't care about:
 
-High = spend more time on this domain | Low = can be brief
+| Archetype | Skip These Domains | Focus On |
+|-----------|-------------------|----------|
+| **System** | I/O, Memory | Capabilities, Ecosystem |
+| **Creative** | Risk/Metrics, Lifecycle, Memory | Identity, I/O, Personality |
+| **Developer** | Lifecycle, Identity | Capabilities, Ecosystem, I/O |
+| **Scribe** | Risk/Metrics, Ecosystem | Identity, I/O, Memory |
+| **Specialist** | I/O, Lifecycle | Capabilities, Risk/Metrics |
+| **Orchestrator** | — (skip nothing) | Ecosystem, Lifecycle, Risk/Metrics |
+| **Researcher** | Lifecycle, Memory, Personality | Capabilities, I/O, Identity |
+| **Game** | Ecosystem, Risk/Metrics | Capabilities, I/O, Personality |
 
 ### Archetype Selection
 
@@ -162,46 +95,42 @@ If multiple archetypes fit, pick the dominant one and note secondary.
 
 ```
 Example: "This sounds like a Developer archetype with some Specialist overlap.
-         I'll prioritize Capabilities and Ecosystem in the interview."
+         Per skip list, I'll skip Lifecycle and focus on Capabilities + Ecosystem."
 ```
 
 ---
 
 ## Depth Layer System
 
-Not every agent needs the same depth. This skill defines 4 layers.
-Every layer produces an Agent Spec — the difference is completeness.
+Not every agent needs the same depth. This skill defines **4 layers**.
 
 ```
-Layer  Sketch ─── 5 questions, quick validation
-                     │
-Layer  Standard ─── Full Scope Interview (8 domains)
-                     │
-Layer  Deep ──────── Standard + Ecosystem Map + Dependency Trace
-                     │
-Layer  Critical ──── Deep + Risk Model + Cost Model + Safety Gates
+Layer 1 — Quick       (infer → confirm → build, ถามเพิ่มถ้า uncertain)
+                       │
+Layer 2 — Standard    (Full 8-domain Scope Interview — default)
+                       │
+Layer 3 — Deep        (Standard + Ecosystem Map + Dependency Trace)
+                       │
+Layer 4 — Critical    (Deep + Risk Model + Cost Model + Safety Gates)
 ```
 
 ### Layer Selection
 
-Choose the layer based on the archetype and these signals:
-
-| Signal | Turbo | Sketch | Standard | Deep | Critical |
-|--------|:----:|:------:|:--------:|:----:|:--------:|
-| Simple agent, 1 capability, clear scope | ✅ | — | — | — | — |
-| Add 1-2 capabilities to existing agent | — | ✅ | — | — | — |
-| New agent, single purpose, no deps | — | — | ✅ | — | — |
-| New agent, 1-2 external integrations | — | — | ✅ | ✅ | — |
-| Agent in multi-agent ecosystem | — | — | — | ✅ | ✅ |
-| Agent handles payment / auth / PII | — | — | — | — | ✅ |
-| Agent deploys to production | — | — | — | — | ✅ |
-| Agent costs significant tokens per call | — | — | — | — | ✅ |
-| Safety or compliance implications | — | — | — | — | ✅ |
-| Archetype = Orchestrator | — | — | — | — | ✅ |
-| Archetype = Specialist | — | — | — | ✅ | — |
+| Signal | Quick | Standard | Deep | Critical |
+|--------|:-----:|:--------:|:----:|:--------:|
+| Agent is new or modified (1-2 caps), scope clear | ✅ | — | — | — |
+| Existing agent, small change | ✅ | — | — | — |
+| New agent, single purpose, no deps | — | ✅ | — | — |
+| New agent, 1-2 external integrations | — | ✅ | ✅ | — |
+| Agent in multi-agent ecosystem | — | — | ✅ | ✅ |
+| Handles payment / auth / PII | — | — | — | ✅ |
+| Deploys to production | — | — | — | ✅ |
+| High token cost per call | — | — | — | ✅ |
+| Safety or compliance implications | — | — | — | ✅ |
+| Archetype = Orchestrator | — | — | — | ✅ |
+| Archetype = Specialist | — | — | ✅ | — |
 
 **Default to Standard.** Promote only when explicit signals are present.
-Do not promote because of uncertainty alone.
 
 **Escalation rule:** If during a lower-layer interview you discover signals
 that warrant a higher layer, promote explicitly:
@@ -215,33 +144,37 @@ Promotion note:
 
 ---
 
-## Layer 0 — Turbo
+## Layer 1 — Quick
 
-For dead-simple agents. User says "want agent that does X" and the scope is
-obvious. No interview needed — just infer, confirm, build.
+For simple agents and small changes. Infer the spec from context, confirm
+with the user, build. No full interview, no separate approval gate.
 
-Don't overthink this layer. If you're unsure whether it fits, use Sketch.
+Don't overthink this layer. If uncertain whether it fits Quick, use Standard.
 
 ### Entry Criteria
 
-- Agent is new or trivially modified (1-2 capabilities).
+- Agent is new (1-2 capabilities) or existing with small modification.
 - No external integrations beyond what already exists.
 - No multi-agent coordination.
 - No safety, cost, or compliance risk.
-- The requirements are clear enough that an 8-domain interview would feel
+- Requirements are clear enough that an 8-domain interview would feel
   like over-engineering.
 
 ### Process
 
 ```
 1. Infer spec from context    ← อ่านจากที่ user บอก + codebase + existing agents
-2. Confirm with user          ← "นี่คือ spec ที่ผม infer — ตรงไหนแก้บอก"
-3. Build                      ← ไม่ต้องรอ approval
+2. Confirm with user          ← เสนอ spec — "ตรงไหนแก้บอก"
+   ถ้ามี uncertainty → ถามเพิ่ม 1-2 ข้อ (อย่าถามทั้ง 8 domains)
+3. Build                      ← user confirm = approval
 ```
 
 ### Output
 
-A condensed Agent Spec. Skip sections that are obvious.
+A condensed Agent Spec (1-page brief). Skip sections that are obvious.
+
+For **modifications to existing agents**, output only changed fields
+(= "diff spec").
 
 ### Example
 
@@ -264,94 +197,58 @@ Confirm:
 User: "ไทย, ทุกฉบับ, ไม่ต้อง log"
 
 Build.
+  → Spec: condensed, one-liner Status: Approved via Quick
 ```
-
----
-
-## Layer 1 — Sketch
-
-For small, well-understood changes. The scope is narrow — a new capability,
-a prompt adjustment, a tool addition to an existing agent.
-
-### Entry Criteria
-
-- Agent already exists.
-- Change is limited to 1-2 capabilities.
-- No new integrations, no ecosystem change.
-- Archetype does not change.
-
-### Process
-
-1. **Intent Check** — Restate the request in one sentence.
-2. **5 Quick Questions:**
-   - What changes? (capability / tool / prompt / behavior?)
-   - Does this change the agent's identity or personality?
-   - Does this affect other agents in the ecosystem?
-   - Is a new tool or MCP needed?
-   - Is there a failure mode if this change goes wrong?
-3. **Propose Spec** — Output a condensed spec with only changed fields.
-4. **Confirm** — One-line approval from user.
-
-### Output
-
-A condensed Agent Spec with only changed fields.
 
 ---
 
 ## Layer 2 — Standard
 
-For new agents and significant changes to existing agents.
-The default layer for any agent design task.
+For new agents and significant changes. The default layer.
 
 ### Process
 
 ```
 1. Intent Gate       → Restate, identify archetype, user + goal + constraint
 2. Codebase Scan     → Read index.md, opencode.jsonc, AGENTS.md, existing agents
-3. Archetype Match   → Select archetype, set domain weights
-4. Scope Interview   → Full 8-domain deep dive (see below)
-5. Propose Spec      → Full Agent Spec (see template)
+                       (ถ้าไม่มี → greenfield: skip, ไป interview เลย)
+3. Archetype Match   → Select archetype, apply skip list
+4. Scope Interview   → Full 8-domain (skipping per archetype skip list)
+5. Propose Spec      → Full Agent Spec (see templates/agent-spec.md)
 6. Approval Gate     → User approves before build
 ```
 
 ### Scope Interview (8 Domains)
 
+สำหรับ Quick layer: ข้ามทั้งหมด (infer + confirm เอาตั้งแต่ต้น)
+สำหรับ Standard+: ใช้ checklist ด้านล่าง แต่ apply Archetype Skip List ก่อน
+ถ้า archetype skip domain ไหน — อย่าถาม
+
 #### Domain 1: Identity & Purpose
 
-Who is this agent? What is its reason to exist?
-
 - **Name** — what is the agent called? (propose if unnamed)
-- **Archetype** — which archetype? (System/Creative/Developer/Scribe/...)
-- **Role** — what function does it serve in the system?
-  Use one clear sentence: "This agent [does X] for [user Y] so that [outcome Z]."
-- **Persona** — what is its character?
+- **Archetype** — which archetype per catalog?
+- **Role** — one clear sentence: "This agent [does X] for [user Y] so that [Z]."
+- **Persona** —
 
-  | Dimension | Options |
-  |-----------|---------|
-  | Tone | formal / casual / technical / playful / authoritative / warm |
-  | Language | Thai / English / bilingual / code-only |
-  | Verbosity | concise / balanced / detailed |
-  | Style | direct / Socratic / narrative / bullet-point |
-  | Vibe (1-2 words) | e.g. "pragmatic realist", "patient teacher", "sharp critic" |
+  | Field | What | Example |
+  |-------|------|---------|
+  | Tone | formal / casual / technical / playful / authoritative / warm | "technical but approachable" |
+  | Example phrase | คำพูดจริงที่ agent พูด | "Let me check the config... Found it. The issue is in line 42." |
 
-  **Always recommend a persona with examples.**
+  **Always recommend a persona.**
   ```
   "I suggest a technical but approachable tone —
-   precise on facts, relaxed in conversation.
-   Example: 'Let me check the config... Found it.
-   The issue is in line 42 — missing env var.'"
+   precise on facts, relaxed in conversation."
   ```
 
-- **Context** — what must it know before working?
-  (project, repo, env, rules, conventions)
+- **Knows context** — what must it know before working?
 - **Narrowest job** — what is the smallest useful definition of its role?
 
 #### Domain 2: Capabilities & Boundaries
 
-What can it do? What must it never do?
-
-- **Capabilities** — list the core actions, ranked by priority.
-  Each capability should include:
+- **Capabilities** — core actions, ranked by priority.
+  Each capability includes:
   - Description (1 sentence)
   - Trigger (how is this capability invoked?)
   - Expected output (what does success look like?)
@@ -361,48 +258,34 @@ What can it do? What must it never do?
   Format each as a **Critical Rule** with scenario:
 
   ```
-  Rule: [statement]
-  Scenario: [concrete example of when this rule applies]
-  Consequence: [what happens if broken]
-  ```
-
-  ```
   Rule: Never modify files outside the project directory.
   Scenario: User asks "fix my desktop settings" — agent has filesystem access.
   Consequence: Refuse politely, explain scope limit.
   ```
 
-- **Tool Mapping** — for each capability, determine what **categories** of tools
-  are needed. Do this **after** capabilities and boundaries are clear.
+- **Tool Mapping** — for each capability, determine what tools are needed.
+  Do this **after** capabilities and boundaries are clear.
 
   ```
   Capability: "Search documentation"
   ↓
-  Needs: knowledge retrieval tool (category)
+  Search codebase for existing tools → found Exa MCP (web search)
   ↓
-  Search codebase: what search/retrieval tools already exist?
-  → Found: Exa MCP (web search), Obsidian (local docs)
-  → Gap: no vector DB for semantic code search
-  ↓
-  Propose: "Knowledge retrieval: uses Exa + Obsidian for now.
-            Consider adding a vector DB (e.g., Chroma/Qdrant)
-            if semantic code search becomes a frequent need."
+  Propose: "Knowledge retrieval via Exa MCP (already configured).
+            If Exa is unavailable, fallback to web search via Firecrawl."
   ```
 
-  **Rule:** Propose tool **categories**, not specific tools.
-  If you know existing tools that fit the category, mention them as examples,
-  but frame them as "currently available options" not "must use".
+  **Rule:** Propose a **specific tool if one already exists** in the codebase.
+  Only propose a **category** when no existing tool fits.
 
   ```
-  ✅ "Needs a knowledge retrieval tool — Exa MCP is already configured
-     and could serve this purpose."
-  ✅ "Needs code execution — consider a sandbox environment.
-     Docker is available in the current setup."
-  ❌ "Needs Exa MCP" (too specific, no rationale)
-  ❌ "Needs Docker" (too specific, doesn't explain why)
+  ✅ "Uses Exa MCP for web search — already configured"
+  ✅ "No existing vector DB found. Needs a semantic search tool
+      such as Chroma or Qdrant."
+  ❌ "Needs a knowledge retrieval tool" (vague — Exa exists, use it)
   ```
 
-  **Tool categories reference (direction only, not exhaustive):**
+  **Tool categories (reference for gaps):**
   ```
   Knowledge retrieval    → search, vector DBs, document stores, web scraping
   Code execution         → sandboxes, interpreters, compilers, linters
@@ -414,8 +297,6 @@ What can it do? What must it never do?
   AI/LLM                 → model APIs, embeddings, RAG pipelines, vector DBs
   Testing                → test runners, coverage, mocking, E2E browsers
   ```
-
-  Choose only the categories relevant to this agent. Do not list them all.
 
 - **Skills** — what skills must it load before work?
 - **Delegation** — when should it hand off to another agent? Which one?
@@ -444,64 +325,36 @@ What can it do? What must it never do?
 
 - **Timing** — synchronous (wait for response) or async (fire and forget)?
 - **Error output** — how does it report errors?
-  To user? To log? To other agent?
 
 #### Domain 4: Ecosystem
-
-Where does this agent live? Who does it talk to?
 
 - **Platform** — OpenCode? ZCode? Claude Code? Custom?
 - **Placement** — subagent? plugin? standalone? MCP server?
 - **Agent team** — works alone? reports to supervisor? peers with others?
 - **Dependencies** — env vars? API keys? config files? services? databases?
 - **Communication** — how does it receive work?
-  (user message? agent message? event? trigger?)
 - **Knowledge** — what files/repos/docs must it read before first use?
 
 #### Domain 5: Memory & Learning
 
-What should this agent remember? How does it learn over time?
-
 - **Session memory** — what must it remember during one conversation?
-  ```
-  Conversation state: current task, files touched, decisions made.
-  ```
-
 - **Persistent memory** — what crosses sessions?
-  ```
-  Cross-session: user preferences, project conventions,
-  past decisions, error patterns.
-  ```
-
 - **Knowledge accumulation** — what should it learn and keep?
-  ```
-  Learn: successful fix patterns, frequently used tools,
-  user's shorthand terms, workflow preferences.
-  Storage: journal files, memory files, index updates.
-  ```
-
 - **Forgetting** — what should it explicitly NOT remember?
-  ```
-  Forget: temporary file paths, one-time credentials,
-  debug output from resolved issues.
-  ```
 
 #### Domain 6: Lifecycle
 
 - **Trigger** — always active? on-demand? scheduled? event-driven?
 - **Auto-load** — must be loaded automatically or only when called?
 - **Scope duration** — how long does this agent exist?
-  (one session? permanent? until removed?)
 - **Maintenance** — who updates it? what happens when it breaks?
 - **Retirement** — when and how is this agent removed?
 
 #### Domain 7: Risk & Constraints
 
 - **Failure modes** — what are the most likely failures?
-  Worst-case scenario?
-- **Sensitive data** — does it handle PII, secrets, credentials, private repos?
+- **Sensitive data** — does it handle PII, secrets, credentials?
 - **Safety guardrails** — what protection layers are needed?
-  (approval gates, read-only defaults, confirmation before destructive actions)
 - **Testing** — how do you verify it works correctly?
 - **Fallback** — what happens if it can't complete its task?
 
@@ -509,7 +362,7 @@ What should this agent remember? How does it learn over time?
 
 How do you know this agent is working well?
 
-Define at least 3 metrics. Mix types:
+At least **1 metric** (not mandatory to have 3). Mix types as needed:
 
 | Metric Type | Examples |
 |-------------|----------|
@@ -519,106 +372,79 @@ Define at least 3 metrics. Mix types:
 | **Quality** | User approval %, rework rate, first-attempt success |
 | **Business** | Tasks completed, issues resolved, features shipped |
 
-For each metric:
+Format:
 ```
 Metric: First-attempt success rate
 Target: >80%
 Measure: (tasks passed QA on first try / total tasks) × 100
 When: Weekly review
-Alert: If <60%, investigate root cause
+Alert: If <60%, investigate
 ```
 
----
+### Standard Layer — Walkthrough Example
 
-## Layer 3 — Deep
+```
+User: "อยากได้ agent ที่ช่วย review PR ให้ — เช็ค security, style, correctness"
 
-For complex agents with multiple integrations, tools, or ecosystem dependencies.
+Intent Gate:
+  Archetype: Developer
+  User: Mike (dev, Thai)
+  Goal: PR review automation
+  Constraint: ทำงานกับ GitHub PRs เท่านั้น
+  Layer: Standard (default — new agent, single purpose)
 
-### Additional Process (after Standard)
+Codebase Scan:
+  → index.md มี steward, minecrafter agents
+  → opencode.jsonc มี Exa, Context7 MCP
+  → AGENTS.md มี rule framework
+  → No existing code-review agent → greenfield for this specific agent
 
-1. **Ecosystem Map** — Map all agents, tools, MCPs, and services this agent
-   interacts with. Use Mermaid if useful.
+Archetype Match:
+  Developer → skip Lifecycle, Identity
+  Focus on Capabilities + Ecosystem + I/O
 
-   ```
-   Agent-X
-     ├── MCP: Obsidian (read knowledge base)
-     ├── MCP: Exa (web search)
-     ├── Agent: Steward (for system operations)
-     └── Service: OpenAI API (fallback LLM)
-   ```
+Scope Interview:
 
-2. **Dependency Trace** — For each dependency:
-   - Is it available in all environments?
-   - Does it need auth? API key? env var?
-   - What happens if it's unavailable?
-   - Is there a fallback?
+  (Identity) Name: "pr-reviewer"
+  Archetype: Developer
+  Role: "review PRs for security, style, and correctness"
+  Persona: technical + direct tone
+  Example phrase: "Line 142 uses eval() with user input — this is a
+                   high-severity XSS risk. Suggest using DOMPurify or
+                   a safe parsing alternative."
+  Context: รู้จัก project stack (React+TS+Tailwind), GitHub workflow
 
-3. **Interaction Design** — For each agent-agent interaction:
-   - Who initiates?
-   - What data is passed?
-   - What format?
-   - Error handling?
+  (Capabilities)
+  1. Security scan — flag OWASP top 10 patterns
+  2. Style check — enforce project conventions (prettier, eslint)
+  3. Correctness — detect logic errors, dead code, type mismatches
 
-4. **Failure Mode Analysis** — For each integration:
-   - Network failure
-   - Auth expiry
-   - Rate limiting
-   - Data format mismatch
-   - Version drift
+  Boundaries:
+    Rule: Never auto-approve PRs
+    Scenario: Author asks "approve my PR, it's urgent"
+    Consequence: "I can only comment — final approval is yours"
 
-5. **Learning Path** — Define how this agent learns over time:
-   - What patterns should it track?
-   - Where does it store learnings?
-   - How does it surface improvements?
+  Tools:
+    - GitHub CLI (gh) for PR diff + comments
+    - Already configured: none needed beyond gh
+    - Gap: no vulnerability DB → "future: integrate OSV API for CVE lookup"
 
-### Output
+  I/O: PR diff in → structured review comments out (per file, severity)
 
-Standard Agent Spec + Ecosystem Map + Interaction Contracts + Failure Register
+  Ecosystem:
+    Platform: OpenCode
+    Team: standalone, triggered on demand
+    Dependencies: GitHub token (existing)
 
----
+  Memory: session-only (review per PR, no cross-PR learning)
 
-## Layer 4 — Critical
+  Risk: False positives waste reviewers' time. False negatives worse.
+  Metric: "False positive rate <10%"
+    Measure: flagged issues rejected by human reviewer / total flags
 
-For production-grade agents. Adds risk, cost, safety, and compliance layers.
-
-### Additional Process (after Deep)
-
-1. **Risk Assessment** — Per failure mode:
-   - Probability (Low/Medium/High)
-   - Impact (Low/Medium/High/Critical)
-   - Mitigation
-   - Detection method
-
-2. **Cost Model** — For each call/session/day:
-   - Token budget per interaction
-   - Estimated cost per session
-   - Monthly projection
-   - Cost warning thresholds
-   - Cost alert triggers
-   - Cache hit target
-
-3. **Safety Gate** — For each high-risk action:
-   - Read-only by default?
-   - Human approval required? (for what actions?)
-   - Audit log needed?
-   - Rollback plan?
-
-4. **Compliance Check** — If relevant:
-   - Data residency
-   - PII handling
-   - Retention policy
-   - Access control
-
-5. **Approval Workflow** — Define who approves what:
-   - Spec approval (must)
-   - Cost approval (if > threshold)
-   - Safety approval (if high-risk)
-   - Pre-deployment review (must)
-
-### Output
-
-Full Agent Spec + Ecosystem Map + Interaction Contracts + Failure Register +
-Risk Register + Cost Model + Safety Review + Approval Log
+Propose Spec → Full spec via templates/agent-spec.md
+Approval Gate → User approves → Build
+```
 
 ---
 
@@ -631,54 +457,53 @@ User request
   ┌─────────────────────────────────────────────┐
   │          1. INTENT GATE                     │
   │  Restate request, identify archetype,       │
-  │  user, goal, constraint. Check codebase.    │
+  │  user, goal, constraint.                    │
+  │  Check codebase (skip if greenfield).       │
   └─────────────────────────────────────────────┘
     │
     ▼
   ┌─────────────────────────────────────────────┐
-  │          2. SELECT ARCHETYPE + LAYER        │
-  │  Use archetype catalog → pick archetype     │
-  │  Use signal table → pick Turbo / Sketch /   │
-  │  Standard / Deep / Critical.                │
-  │  Write justification.                       │
+  │          2. SELECT LAYER                    │
+  │  Use signal table → Quick / Standard /      │
+  │  Deep / Critical. Write justification.      │
   └─────────────────────────────────────────────┘
     │
-    ├── Layer = Turbo ──────────────────────────┤
+    ├── Layer = Quick ──────────────────────────┤
     │                                           │
     │  ┌─────────────────────────────────────┐  │
     │  │  3. INFER + CONFIRM                │  │
     │  │  Infer spec จาก context + codebase  │  │
-    │  │  → เสนอ spec → user confirm        │  │
-    │  │  → BUILD (no approval gate)        │  │
+    │  │  → เสนอ condensed spec              │  │
+    │  │  → user confirm → BUILD             │  │
+    │  │  (ถ้า modify → output เฉพาะที่เปลี่ยน) │  │
     │  └─────────────────────────────────────┘  │
     │                                           │
-    ├── Layer = Sketch / Standard / Deep / Critical ─┤
-    │                                               │
-    │  ┌─────────────────────────────────────────┐  │
-    │  │  3. SCOPE INTERVIEW                     │  │
-    │  │  Depth depends on layer:                │  │
-    │  │  Sketch → infer + 5 questions           │  │
-    │  │  Standard → 8-domain interview          │  │
-    │  │  Deep → + Ecosystem + deps + learning   │  │
-    │  │  Critical → + Risk + Cost + Safety      │  │
-    │  │                                         │  │
-    │  │  Infer-first: fill what you can before  │  │
-    │  │  asking. Only ask about uncertainty.    │  │
-    │  └─────────────────────────────────────────┘  │
-    │                                               │
-    │  ┌─────────────────────────────────────────┐  │
-    │  │  4. PROPOSE SPEC                        │  │
-    │  │  Write Agent Spec at layer depth.       │  │
-    │  │  Present to user.                       │  │
-    │  └─────────────────────────────────────────┘  │
-    │                                               │
-    │  ┌─────────────────────────────────────────┐  │
-    │  │  5. APPROVAL GATE                       │  │
-    │  │  User reviews → approve / revise /      │  │
-    │  │  reject. No build until approved.       │  │
-    │  └─────────────────────────────────────────┘  │
-    │                                               │
-    └───────────────────────────────────────────────┘
+    ├── Layer = Standard / Deep / Critical ─────┤
+    │                                           │
+    │  ┌─────────────────────────────────────┐  │
+    │  │  3. SCOPE INTERVIEW                 │  │
+    │  │  Apply archetype skip list.         │  │
+    │  │  Standard → 8 domains (skip per     │  │
+    │  │    archetype)                        │  │
+    │  │  Deep → + Ecosystem + deps           │  │
+    │  │  Critical → + Risk + Cost + Safety  │  │
+    │  │                                     │  │
+    │  │  Infer-first: only uncertain Qs     │  │
+    │  └─────────────────────────────────────┘  │
+    │                                           │
+    │  ┌─────────────────────────────────────┐  │
+    │  │  4. PROPOSE SPEC                    │  │
+    │  │  Full Agent Spec (templates/agent-  │  │
+    │  │  spec.md). Present to user.         │  │
+    │  └─────────────────────────────────────┘  │
+    │                                           │
+    │  ┌─────────────────────────────────────┐  │
+    │  │  5. APPROVAL GATE                   │  │
+    │  │  User approves / revise / reject.   │  │
+    │  │  No build until approved.           │  │
+    │  └─────────────────────────────────────┘  │
+    │                                           │
+    └───────────────────────────────────────────┘
     │
     ▼
   ┌─────────────────────────────────────────────┐
@@ -691,19 +516,56 @@ User request
 
 ---
 
+## Questioning Technique
+
+### T0: Infer-First (Primary)
+
+**Before asking anything, try to fill the spec from what you already know.**
+Then ask only the gaps.
+
+```
+User: "อยากได้ agent ที่สรุปเมล์หน่อย"
+
+Infer (จาก context + codebase):
+  Archetype: Scribe
+  Capability: read mail → bullet summary
+  Tools: Gmail MCP (มีอยู่แล้ว)
+  Risk: ต่ำ, read-only
+  Ecosystem: อยู่กับ steward
+
+Ask (เฉพาะที่ยัง uncertain):
+  "สรุปภาษาไทยหรืออังกฤษ? สรุปทุกฉบับหรือเฉพาะหัวข้อ?"
+```
+
+### T1: Decision Tree Walk
+
+เมื่อต้องถาม — ถามทีละขั้น อย่ากระโดดข้าม domain
+
+```
+Identity → Personality → Capabilities → I/O → Ecosystem → Memory → Lifecycle → Risk/Metrics
+```
+
+### T2: Recommend an Answer
+
+ทุกคำถามควรมี recommendation — อย่าถามปลายเปิด
+
+```
+❌ "personality แบบไหน?"
+✅ "แนะนำ tone กลางๆ ทางการ — หรืออยากได้แนวอื่น?"
+```
+
+---
+
 ## Agent Test Plan
 
-Every agent capability needs a test prompt. This is not unit testing —
-it's behavioral validation: "Does the agent do what we designed it to do?"
+Every agent capability needs a test prompt. Behavioral validation:
+"Does the agent do what we designed it to do?"
 
 ### When to Create
 
-Add test plans at **Standard layer and above**. At Sketch layer, skip tests
-for unchanged capabilities.
+Standard layer and above. At Quick layer, skip tests for unchanged caps.
 
 ### Test Prompt Format
-
-For each capability, define:
 
 ```
 Capability: [name]
@@ -722,46 +584,28 @@ Test prompt: "หาข้อมูลเกี่ยวกับ Docker network
 Expected output: สรุปสั้นๆ 1-3 ข้อ + แหล่งที่มา
 Edge cases:
   - ไม่พบข้อมูล → "ไม่พบข้อมูลในฐานความรู้ แนะนำให้ค้นจากภายนอก"
-  - คำค้นกำกวม → ถามให้ชัดก่อน ("Docker networking — หมายถึง network driver?
-    overlay? หรือปัญหาการเชื่อมต่อ?")
+  - คำค้นกำกวม → ถามให้ชัดก่อน
   - ขอข้อมูลที่เป็นความลับ → "ขออภัย ข้อมูลนี้ไม่สามารถเปิดเผยได้"
 ```
 
 ### Test Plan Placement
 
 ```
-Create Agent session
-        │
-        ▼
-  Spec approved → Build agent → Run test prompts
-        │                         │
-        │                    ┌─────┴──────┐
-        │                    ▼            ▼
-        │                 PASS          FAIL
-        │                    │            │
-        │              ┌─────┘            ▼
-        │              │         Iterate & fix
-        │              │         → rerun test
-        │              │         → pass → done
-        ▼              ▼
-   Deploy / Handoff
+Spec approved → Build agent → Run test prompts
+                   │              │
+                   │         ┌─────┴──────┐
+                   │         ▼            ▼
+                   │       PASS          FAIL
+                   │         │            │
+                   │    ┌────┘            ▼
+                   │    │         Iterate & fix
+                   ▼    ▼         → rerun → pass → done
+              Deploy / Handoff
 ```
-
-### What to Test
-
-| Test Type | What | When |
-|-----------|------|------|
-| **Happy path** | Capability works as designed | Every capability |
-| **Boundary** | Agent refuses out-of-scope requests | Every Critical Rule |
-| **Failure** | Tool unavailable, bad input, timeout | Layer 3+ |
-| **Edge case** | Unusual but realistic input | Layer 3+ |
-| **Multi-turn** | Conversation context maintained | Layer 4+ |
 
 ---
 
 ## Agent Iteration Loop
-
-An agent is not done after the first build. It improves through iteration.
 
 ### The Loop
 
@@ -778,297 +622,27 @@ Build  →  Run test prompts  →  Review results
   │                    │    ┌─────┴──────┐
   │                    │    ▼            ▼
   │                    │  Scope gap?  Behavior gap?
-  │                    │  (missing     (wrong output,
-  │                    │   capability)  bad tone, etc.)
-  │                    │    │            │
-  │                    │    ▼            ▼
-  │                    │  Redesign     Fix instruction
-  │                    │  spec         / rules
-  │                    │    │            │
+  │                    │               │
+  │                    │    Redesign   Fix instruction
+  │                    │    spec       / rules
   │                    └────┴────────────┘
   │                              │
   └──────────────────────────────┘
         (loop until stable)
 ```
 
-### When to Stop Iterating
+### When to Stop
 
 | Signal | Action |
 |--------|--------|
 | All test prompts pass | ✅ Deploy |
-| Critical path passes, minor edge cases fail | ⚠️ Log known issues, deploy |
-| Same failure persists after 3 redesigns | 🛑 Escalate — may need scope change |
+| Critical path passes, minor edge cases fail | ⚠️ Log issues, deploy |
+| Same failure after 3 redesigns | 🛑 Escalate — may need scope change |
 | User says "enough" | 🛑 Stop |
-
-### Iteration Documentation
-
-Each iteration should be documented:
-
-```
-## Iteration 2 — 2026-07-03
-What changed: Added retry logic for API failure
-Before: API timeout → silent failure
-After: API timeout → retry 3x → log → escalate
-Test results: 6/6 pass (was 4/6)
-Known issues: Rate limit detection not tested — needs live API
-```
-
-Documentation lives in the agent's journal or a companion log file.
-Keep it light — bullet points, not essays.
-
----
-
-## Questioning Technique
-
-Use these techniques when you need to ask during the Scope Interview.
-The goal is **clarify scope**, not grill the user. Infer first, ask only
-what remains genuinely uncertain.
-
-### T0: Infer-First (Primary)
-
-**Before asking anything, try to fill the spec from what you already know.**
-Then ask only the gaps.
-
-```
-User: "อยากได้ agent ที่สรุปเมล์หน่อย"
-
-Infer (จาก context + codebase):
-  Archetype: Scribe (document/summary)
-  Capability: read mail → bullet summary
-  Tools: Gmail MCP (มีอยู่แล้วใน opencode.jsonc)
-  Risk: ต่ำ, read-only
-  Ecosystem: อยู่กับ steward
-
-Ask (เฉพาะที่ยัง uncertain):
-  "สรุปภาษาไทยหรืออังกฤษ? สรุปทุกฉบับหรือเฉพาะหัวข้อ?"
-```
-
-**At Turbo and Sketch layers,** infer the entire spec and just confirm.
-No need to walk through domains.
-
-### T1: Decision Tree Walk
-
-เมื่อต้องถามจริงๆ — ถามทีละขั้น อย่ากระโดดข้าม domain
-
-```
-Identity → Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → Lifecycle → Risk/Metrics
-```
-
-### T2: Recommend an Answer
-
-ทุกคำถามควรมี recommendation ให้ user react — อย่าถามปลายเปิด
-
-```
-❌ "personality แบบไหน?"
-✅ "แนะนำ tone กลางๆ ทางการ — หรืออยากได้แนวอื่น?"
-```
-
-### T3: Sharpen Fuzzy Language
-
-เวลา user พูดคำคลุมเครือ — ถามให้ชัด
-
-| คำคลุมเครือ | ให้ชัดเป็น |
-|-------------|-----------|
-| "manage" | read? create? update? delete? |
-| "handle" | process? route? store? forward? |
-| "user" | customer? admin? member? |
-| "remember" | session memory? persistent? |
-
-### T4: Concrete Scenarios
-
-เมื่อต้อง discuss behavior หรือ failure mode — ยก scenario ให้เห็นภาพ
-
-```
-"ถ้า agent รับ request ที่ทำไม่ได้ — ควรปฏิเสธ? แนะนำ agent อื่น? หรือส่งต่อไป?"
-```
-
-### T5: Cross-Reference
-
-เทียบกับ agent ที่มีอยู่ก่อน — มีใครทำ类似 นี้แล้วหรือยัง?
-
-```
-User: "อยากให้ agent สรุป daily auto"
-Cross-ref: "Steward มี daily journal pattern อยู่แล้วใน index.md —
-            ใช้ format เดียวกัน หรือออกแบบใหม่?"
-```
-
----
-
-## Agent Spec Template
-
-This is the output of every Create Agent session. Fill fields at the
-appropriate depth for the selected layer.
-
-```markdown
-# Agent Spec: [Name]
-
-## v[0.1.0] — [YYYY-MM-DD]
-Layer: [Sketch / Standard / Deep / Critical]
-Archetype: [System / Creative / Developer / Scribe / Specialist / Orchestrator / Researcher / Game]
-Status: [Proposed / Approved / In Progress / Built]
-
----
-
-## Identity
-
-- **Name:**
-- **Archetype:**
-- **Role:** This agent [does X] for [user Y] so that [outcome Z].
-- **Persona:**
-
-  | Dimension | Value |
-  |-----------|-------|
-  | Tone | |
-  | Language | |
-  | Verbosity | |
-  | Style | |
-  | Vibe | |
-
-  **Example phrases:**
-  - [context]: "[example phrase]"
-  - [context]: "[example phrase]"
-
-- **Knows context:**
-- **Narrowest job:**
-
----
-
-## Capabilities
-
-| # | Capability | Trigger | Success Output | Failure Mode |
-|---|-----------|---------|---------------|-------------|
-| 1 | | | | |
-| 2 | | | | |
-
-### Critical Rules (Boundaries)
-
-| Rule | Scenario | Consequence |
-|------|----------|-------------|
-| | | |
-| | | |
-
-### Tools & MCPs
-
-| Tool/MCP | Purpose | Config | Auth |
-|----------|---------|--------|------|
-| | | | |
-
-### Delegation
-
-| When | To Whom | What Passed |
-|------|---------|-------------|
-| | | |
-
----
-
-## Input / Output
-
-- **Input format:**
-- **Output format:**
-- **Timing:** [sync / async]
-- **Error output:**
-
-### Deliverables
-
-| Deliverable | Format | Template/Idea |
-|-------------|--------|---------------|
-| | | |
-| | | |
-
----
-
-## Ecosystem
-
-- **Platform:**
-- **Placement:** [subagent / plugin / standalone / MCP]
-- **Team:** [alone / supervised / peer]
-- **Communicates with:**
-
-| Agent/Service | Interaction | Format |
-|---------------|------------|--------|
-| | | |
-
-- **Dependencies:**
-
-| Dep | Required? | Fallback? |
-|-----|-----------|-----------|
-| | | |
-
----
-
-## Memory & Learning
-
-- **Session memory:**
-- **Persistent memory:**
-- **Knowledge accumulation:**
-- **Forgetting:**
-
----
-
-## Lifecycle
-
-- **Trigger:**
-- **Auto-load:** [yes / no]
-- **Duration:**
-- **Maintenance:**
-- **Retirement plan:**
-
----
-
-## Risk & Safety (Layer 3+)
-
-| Failure | Probability | Impact | Mitigation |
-|---------|------------|--------|------------|
-| | | | |
-
-### Sensitive Data
--
-
-### Safety Gates
-- [ ] Read-only by default?
-- [ ] Human approval required?
-- [ ] Audit log?
-- [ ] Rollback plan?
-
----
-
-## Success Metrics
-
-| Metric | Type | Target | Measure | Alert If |
-|--------|------|--------|---------|----------|
-| | | | | |
-| | | | | |
-| | | | | |
-
-### Cost Model (Layer 4+)
-- **Per-call budget:**
-- **Per-session estimate:**
-- **Monthly projection:**
-- **Cache hit target:**
-- **Alert threshold:**
-
----
-
-## Approval
-
-| Item | Approved? | Approver | Date |
-|------|-----------|----------|------|
-| Spec | | | |
-| Cost | | | |
-| Safety | | | |
-
----
-
-## Notes
-
--
-```
 
 ---
 
 ## Checkpoint Gates
-
-These gates must pass before moving to the next phase.
 
 ### Intent Gate
 - [ ] Request restated
@@ -1076,36 +650,16 @@ These gates must pass before moving to the next phase.
 - [ ] User identified
 - [ ] Goal clear
 - [ ] Constraint noted
-- [ ] Codebase scanned for existing context
+- [ ] Codebase scanned (or greenfield acknowledged)
 - [ ] Layer selected with justification
 
-### Scope Gate (after interview)
-- [ ] All 8 domains covered at correct layer depth
-- [ ] Codebase searched for answers first
-- [ ] Persona defined with examples
-- [ ] Every vague term sharpened
-- [ ] At least one scenario tested per risk
-- [ ] At least 3 success metrics defined
-- [ ] Critical Rules have scenarios
-- [ ] Cross-reference with existing agents done
-
-### Spec Gate (before approval)
+### Spec Gate (before build)
 - [ ] Agent Spec written at correct layer depth
-- [ ] Personality examples included
-- [ ] Deliverables with format listed
-- [ ] All empty fields explicitly marked TBD or N/A
+- [ ] Persona defined with example
+- [ ] Deliverables listed
+- [ ] All empty fields marked TBD or N/A
 - [ ] Approval items listed
 - [ ] Spec presented to user
-
-### Build Gate
-- [ ] Spec approved by user
-- [ ] Test prompts written for each new capability
-- [ ] Happy-path tests pass
-- [ ] Boundary tests confirm Critical Rules
-- [ ] index.md updated
-- [ ] Journal updated
-- [ ] Handoff notes written (if not building)
-- [ ] Iteration cycle (if needed) documented
 
 ---
 
@@ -1120,13 +674,9 @@ These gates must pass before moving to the next phase.
 
 ## Related
 
+- [`templates/agent-spec.md`](templates/agent-spec.md) — output template (single source of truth)
+- [`references/deep-critical.md`](references/deep-critical.md) — Deep & Critical layer details
 - [`idea-to-architecture-agent`](https://github.com/aetox-skills/idea-to-architecture-agent)
-  — scope-first for software architecture, not agent-specific.
 - [`senior-architect-agent`](https://github.com/aetox-skills/senior-architect-agent)
-  — architecture mapping for existing systems.
-- `grill-with-docs` — questioning methodology reference (in skill-library).
 - [`Aetox-Agents-Team`](https://github.com/aetox-skills/Aetox-Agents-Team)
-  — real ZCode agent implementations following this skill's patterns.
 - [`Agency-Agents`](https://github.com/msitarzewski/agency-agents)
-  — 211 agent archetypes across 16 divisions (external reference).
-- `aetox-skills/token-saver` — RTK protocol for token efficiency.

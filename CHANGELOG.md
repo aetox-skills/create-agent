@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.5.0 (2026-07-03)
+
+**Major refactor based on Opus 4.6 feedback.** Key changes:
+
+- **4 layers (real)** — Turbo + Sketch merged into Quick. SKILL.md now says "4"
+  and means it. No more inconsistency.
+- **File split** — `SKILL.md` (core, ~500 lines, Quick + Standard) +
+  `references/deep-critical.md` (Deep/Critical layers, on-demand).
+  Reduces token waste when loading the skill.
+- **Archetype skip list** — weight matrix (High/Medium/Low) replaced with
+  actionable skip list: "archetype X → skip domains Y, Z. Focus on A, B."
+- **Persona simplified** — 5 dimensions → 2 (Tone + Example phrase).
+- **Tool mapping** — propose specific tool if known, category if not.
+- **Checkpoint gates 4→2** — Intent Gate + Spec Gate only. Scope/Build gates
+  removed (redundant with interview flow and build process).
+- **Iron Rule #7 fix** — Quick-layer confirmation counts as explicit agreement.
+- **Inline template removed** — `templates/agent-spec.md` is single source
+  of truth. SKILL.md points to it.
+- **Success metrics optional** — suggested 1+, not mandatory 3.
+- **Greenfield path** — if no codebase exists, skip scan, go to interview.
+- **Diff spec** — when modifying existing agent, output only changed fields.
+- **Standard walkthrough example** — PR reviewer agent walkthrough from
+  Intent Gate through Approval.
+- **Questioning technique** — cut to T0 (Infer-First) + T1 (Decision Tree)
+  + T2 (Recommend). T3-T5 moved to references/deep-critical.md.
+
 ## v0.4.1 (2026-07-03)
 
 - **Turbo Mode (Layer 0)** — for dead-simple agents: infer → confirm → build
