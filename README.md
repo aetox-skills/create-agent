@@ -75,6 +75,149 @@ skill("create-agent")
 - Codex — วางใน `.codex/skills/`
 - AI agent ทั่วไป — copy content ของ SKILL.md ใส่ system prompt
 
+## Full Workflow
+
+```
+┌───────────────────────────────────────────────────┐
+│                    START                          │
+│  "สร้าง agent X หน่อย" / "ออกแบบ agent ใหม่"    │
+└───────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────────────┐
+│ ① INTENT GATE                                    │
+│ ─────────────────────────────────────────────    │
+│ · Restate request                                │
+│ · Identify archetype (System / Creative /        │
+│   Developer / Scribe / Specialist / Orchestrator │
+│   / Researcher / Game)                           │
+│ · Check codebase (มี agent อะไรอยู่แล้ว?)         │
+│ · Record goal + constraint                       │
+└───────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────────────┐
+│ ② SELECT LAYER                                   │
+│ ─────────────────────────────────────────────    │
+│ · Sketch   → 5 คำถาม ปรับเล็กน้อย                │
+│ · Standard → 8-domain full interview (default)   │
+│ · Deep     → Standard + ecosystem map + deps     │
+│ · Critical → Deep + risk + cost + safety         │
+│ เขียน justification เพราะเลือก layer นี้        │
+└───────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────────────┐
+│ ③ SCOPE INTERVIEW (8 domains)                    │
+│ ─────────────────────────────────────────────    │
+│                                                  │
+│  [1] IDENTITY         ─── name, archetype,       │
+│                          role, persona (tone,    │
+│                          language, vibe +        │
+│                          ตัวอย่างประโยค)          │
+│                                                  │
+│  [2] CAPABILITIES     ─── list capabilities      │
+│       + BOUNDARIES        ranked, แต่ละตัวมี     │
+│                            trigger + output      │
+│                            + failure mode        │
+│                          Boundaries = Critical   │
+│                          Rules (Rule + Scenario  │
+│                          + Consequence)          │
+│                                                  │
+│  [3] TOOL MAPPING ⬅── หลัง capabilities ชัด     │
+│       └─ แต่ละ capability → tool category        │
+│       └─ search codebase → มีอะไรอยู่แล้ว?        │
+│       └─ propose categories (ไม่指名 tools)     │
+│                                                  │
+│  [4] I/O + DELIVERABLES ── input/output format   │
+│                            deliverables template  │
+│                                                  │
+│  [5] ECOSYSTEM         ─── platform, team,       │
+│                          dependencies, comms     │
+│                                                  │
+│  [6] MEMORY & LEARNING ─── session, persistent   │
+│                          knowledge accumulation  │
+│                                                  │
+│  [7] LIFECYCLE         ─── trigger, duration,    │
+│                          maintenance, retirement │
+│                                                  │
+│  [8] RISK + METRICS    ─── failure modes,        │
+│                          safety, 3+ KPIs         │
+│                          (accuracy, speed,        │
+│                           efficiency, quality,    │
+│                           business)              │
+│                                                  │
+│ ── ใช้ Grill Methodology ตลอด interview: ──     │
+│    · Decision Tree Walk    (ถามทีละขั้น)          │
+│    · One at a Time         (รอตอบก่อน)            │
+│    · Recommend an Answer   (ไม่ถามปลายเปิด)       │
+│    · Codebase-First        (ค้นก่อนถาม)           │
+│    · Sharpen Fuzzy Language(คำคลุมเครือ → ชัด)   │
+│    · Concrete Scenarios    (ยกเคสสมมุติ)          │
+│    · Cross-Reference       (เทียบ agent ที่มี)    │
+└───────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────────────┐
+│ ④ PROPOSE SPEC                                   │
+│ ─────────────────────────────────────────────    │
+│ · เขียน Agent Spec 14 sections                    │
+│ · Personality examples                           │
+│ · Tool categories + proposals                    │
+│ · Deliverables + format                          │
+│ · Success metrics                                │
+└───────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────────────┐
+│ ⑤ APPROVAL GATE                                  │
+│ ─────────────────────────────────────────────    │
+│ · ผู้ใช้ดู spec                                  │
+│ · Approve / Revise / Reject                      │
+│ · No build until approved                        │
+└───────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────────────┐
+│ ⑥ BUILD / HANDOFF                                │
+│ ─────────────────────────────────────────────    │
+│ · ถ้าอนุมัติ → สร้าง agent หรือเขียน handoff notes │
+│ · Update index.md + journal                      │
+└───────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────────────┐
+│ ⑦ AGENT TEST PLAN                                │
+│ ─────────────────────────────────────────────    │
+│ · เขียน test prompts สำหรับแต่ละ capability        │
+│ · Happy path test → ผ่าน                          │
+│ · Boundary test (Critical Rules) → ผ่าน            │
+│ · Edge case test (Layer 3+)                      │
+└───────────────────────────────────────────────────┘
+                      │
+                      ▼
+┌───────────────────────────────────────────────────┐
+│ ⑧ ITERATION LOOP (วนจน stable)                   │
+│ ─────────────────────────────────────────────    │
+│ · Run test prompts                                │
+│ · FAIL → identify gap                            │
+│    ├─ Scope gap? → กลับไป redesign spec           │
+│    └─ Behavior gap? → fix instruction/rules       │
+│ · PASS → deploy                                   │
+│ · 3 redesigns fail → escalate                     │
+│ · ผู้ใช้บอกพอ → stop                             │
+└───────────────────────────────────────────────────┘
+```
+
+### One-liner Summary
+
+```
+Intent Gate → Select Archetype + Layer → Scope Interview (8 domains + Tool Mapping)
+→ Propose Spec → Approval Gate → Build / Handoff → Test Plan → Iteration Loop
+```
+
+ตลอดทั้ง process: **Agent Anatomy** เป็นกรอบโครงสร้าง, **Grill Methodology** เป็นเทคนิคการถาม, **Checkpoint Gates** คอยกันไม่ให้ข้ามขั้น
+
 ## Repository Structure
 
 ```
