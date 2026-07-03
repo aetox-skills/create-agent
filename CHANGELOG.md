@@ -4,6 +4,7 @@
 
 - **Agent Anatomy (Progressive Disclosure)** — 3-level structure: Identity → Instruction → Resource
 - **Tool Categories** — directional guidance (ไม่指名 specific tools): knowledge retrieval, code execution, communication, system ops, data processing, visual/creative, monitoring
+- **Tool Mapping process** — หลัง capabilities + boundaries ชัด → map แต่ละ capability → tool categories → search codebase → propose
 - **Agent Test Plan** — test prompts per capability with format, example, edge cases
 - **Agent Iteration Loop** — Build → Test → Review → Redesign → Repeat
 - Iteration documentation standard (what changed, before/after, test results, known issues)

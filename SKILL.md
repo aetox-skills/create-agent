@@ -108,26 +108,14 @@ Everything else the agent might need, loaded on demand.
 - Glossary of terms, common patterns, anti-patterns
 - Links to external standards or APIs
 
-**Tool Categories (direction, not specific tools):**
-```
-Knowledge retrieval    → search, vector DBs, document stores, web scraping
-Code execution         → sandboxes, interpreters, compilers, linters
-Communication         → email, messaging, notifications, webhooks
-System operations     → file I/O, process management, network, registry
-Data processing       → ETL, transformation, validation, storage
-Visual/creative       → image generation, layout engines, animation
-Monitoring/observability → logs, metrics, tracing, alerting
-```
+**Tool Categories Reference (ดูเพิ่มที่ Domain 2 — Tool Mapping สำหรับ process จริง):**
 
-**Guideline:** Define the **category** and **purpose** of tools needed.
-Let the builder pick the actual tool based on current ecosystem.
+A complete list of tool categories is in Domain 2 (Capabilities & Boundaries).
+Use that section for the actual tool mapping step. This is just a reminder
+that tool categories exist as Level 3 resources.
 
-```
-✅ "Needs a vector database for semantic recall"
-   (builder picks Chroma / Qdrant / pgvector)
-❌ "Needs Chroma DB"  
-   (too specific, ages out)
-```
+Key principle: propose **categories** not specific tools.
+See Domain 2 for examples and process.
 
 **Skill References:**
 - Pointers to reusable skills in `skill-library/` that this agent should load
@@ -336,7 +324,51 @@ What can it do? What must it never do?
   Consequence: Refuse politely, explain scope limit.
   ```
 
-- **Tools** — what tools does it need? (MCPs, APIs, CLI, filesystem)
+- **Tool Mapping** — for each capability, determine what **categories** of tools
+  are needed. Do this **after** capabilities and boundaries are clear.
+
+  ```
+  Capability: "Search documentation"
+  ↓
+  Needs: knowledge retrieval tool (category)
+  ↓
+  Search codebase: what search/retrieval tools already exist?
+  → Found: Exa MCP (web search), Obsidian (local docs)
+  → Gap: no vector DB for semantic code search
+  ↓
+  Propose: "Knowledge retrieval: uses Exa + Obsidian for now.
+            Consider adding a vector DB (e.g., Chroma/Qdrant)
+            if semantic code search becomes a frequent need."
+  ```
+
+  **Rule:** Propose tool **categories**, not specific tools.
+  If you know existing tools that fit the category, mention them as examples,
+  but frame them as "currently available options" not "must use".
+
+  ```
+  ✅ "Needs a knowledge retrieval tool — Exa MCP is already configured
+     and could serve this purpose."
+  ✅ "Needs code execution — consider a sandbox environment.
+     Docker is available in the current setup."
+  ❌ "Needs Exa MCP" (too specific, no rationale)
+  ❌ "Needs Docker" (too specific, doesn't explain why)
+  ```
+
+  **Tool categories reference (direction only, not exhaustive):**
+  ```
+  Knowledge retrieval    → search, vector DBs, document stores, web scraping
+  Code execution         → sandboxes, interpreters, compilers, linters
+  Communication          → email, messaging, notifications, webhooks
+  System operations      → file I/O, process management, network, registry
+  Data processing        → ETL, transformation, validation, storage
+  Visual/creative        → image generation, layout engines, animation
+  Monitoring             → logs, metrics, tracing, alerting
+  AI/LLM                 → model APIs, embeddings, RAG pipelines, vector DBs
+  Testing                → test runners, coverage, mocking, E2E browsers
+  ```
+
+  Choose only the categories relevant to this agent. Do not list them all.
+
 - **Skills** — what skills must it load before work?
 - **Delegation** — when should it hand off to another agent? Which one?
 - **Failure handling** — what happens when a capability fails?
