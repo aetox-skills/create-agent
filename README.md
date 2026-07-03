@@ -40,8 +40,8 @@ Layer 4 — Critical   (Deep + risk model + cost model + safety gates)
 **Default is Quick.** Start every session at Quick. Escalate to Standard/
 Deep/Critical only when complexity signals demand it.
 
-With an **Archetype System** (8 archetypes) with **skip lists** — telling
-each archetype which interview domains to skip, not relative weights.
+With an **Archetype System** (8 archetypes) with **minimize lists** —
+3 tiers: brief / skip-if-obvious / deep-dive. Not relative weights.
 
 Plus:
 - **Iron Rules** — scope-first, minimize-round-trips, infer-first

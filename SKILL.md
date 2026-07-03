@@ -31,12 +31,12 @@ Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → 
 1. **Scope before build** — No code, no prompt, no tool config until scope is
    validated. Zero exceptions.
 
-   **Correction Authority:** ใช้ judgment ของตัวเอง ถ้า scope ที่ user สั่งมี
-   ช่องโหว่ obvious (missing dep, contradiction, safety risk ที่ชัดเจน) —
-   แก้ให้เลย ไม่ต้องถาม user ก่อน แค่บอกว่าปรับอะไรและทำไม
-   **ขออนุมัติเฉพาะกรณี** ที่ solution ที่ถูกต้องอาจไม่ตรงใจ user
-   (เช่น ต้องใช้ tool ใหม่, เปลี่ยน workflow) — แต่ถ้า common sense
-   แก้ได้ จัดการเลย
+   **Correction Authority:** ใช้กับ **draft/spec assumption เท่านั้น**
+   — แก้สมมติฐานใน spec ที่ user พลาด (missing dep, contradiction, safety
+   risk) ให้เลย ไม่ต้องถามก่อน แค่บอกว่าปรับอะไรและทำไม
+   **ห้ามแก้ไฟล์, config, tool, หรือ workflow จริง** โดยไม่ได้รับ approval
+   **ขออนุมัติก่อน** ถ้า solution ที่ถูกต้องต้องเปลี่ยน tool ใหม่ หรือ
+   เปลี่ยน workflow ที่มีอยู่ — แต่ถ้า common sense แก้ spec ได้ จัดการเลย
 2. **Minimum sufficient depth** — Default to Quick. Promote to Standard/Deep/
    Critical only when explicit signals appear. Do not start at Standard.
 3. **Infer first, ask later** — Before asking a question, try to infer the
@@ -80,20 +80,28 @@ right archetype and understand which interview domains to focus on or skip.
 | 🔍 | **Researcher** | Search, analyze, synthesize | Curious, analytical, thorough | Exa, Firecrawl, web tools | Quick |
 | 🎮 | **Game** | Game-specific behavior | Playful, adaptive | Game API, bot framework | Quick → Deep |
 
-### Archetype Skip List
+### Archetype Minimize List
 
-Don't waste time on domains this archetype doesn't care about:
+ไม่ใช่ "ข้าม" แต่บอกว่า domain ไหนควร **สั้น** หรือ **ข้ามได้ถ้า obvious**
 
-| Archetype | Skip These Domains | Focus On |
-|-----------|-------------------|----------|
-| **System** | I/O, Memory | Capabilities, Ecosystem |
-| **Creative** | Risk/Metrics, Lifecycle, Memory | Identity, I/O, Personality |
-| **Developer** | Lifecycle, Identity | Capabilities, Ecosystem, I/O |
-| **Scribe** | Risk/Metrics, Ecosystem | Identity, I/O, Memory |
-| **Specialist** | I/O, Lifecycle | Capabilities, Risk/Metrics |
-| **Orchestrator** | — (skip nothing) | Ecosystem, Lifecycle, Risk/Metrics |
-| **Researcher** | Lifecycle, Memory, Personality | Capabilities, I/O, Identity |
-| **Game** | Ecosystem, Risk/Metrics | Capabilities, I/O, Personality |
+มี 3 ระดับ:
+- **Deep-dive** — ถามให้ครบ
+- **Brief** — ถามแค่ 1-2 คำถาม แล้วสรุป
+- **Skip if obvious** — ไม่ถาม ถ้า common sense บอกได้ (เช่น Scribe → Memory = session-only)
+
+| Archetype | Brief | Skip if obvious | Deep-dive |
+|-----------|-------|-----------------|-----------|
+| **System** | Identity, I/O | Memory | Capabilities, Ecosystem |
+| **Creative** | Risk/Metrics, Lifecycle | Memory | Identity, I/O, Personality |
+| **Developer** | Lifecycle | **Identity** | Capabilities, Ecosystem, I/O |
+| **Scribe** | Ecosystem | Risk/Metrics, Memory | Identity, I/O |
+| **Specialist** | I/O, Lifecycle | — | Capabilities, Risk/Metrics |
+| **Orchestrator** | — | — | ทุก domain |
+| **Researcher** | Lifecycle, Personality | Memory | Capabilities, I/O, Identity |
+| **Game** | Ecosystem | Risk/Metrics | Capabilities, I/O, Personality |
+
+> **Developer + Identity:** Brief ไม่ใช่ Skip — identity (frontmatter) ยังต้องมี
+> เพราะเป็นตัวกำหนดว่า agent ถูกเรียกเมื่อไหร่ แค่ทำให้สั้น (1-2 sentences)
 
 ### Archetype Selection
 
@@ -102,7 +110,8 @@ If multiple archetypes fit, pick the dominant one and note secondary.
 
 ```
 Example: "This sounds like a Developer archetype with some Specialist overlap.
-         Per skip list, I'll skip Lifecycle and focus on Capabilities + Ecosystem."
+         Per minimize list: Lifecycle = brief, Identity = brief (frontmatter
+         only), focus deep-dive on Capabilities + Ecosystem."
 ```
 
 ---
@@ -173,17 +182,32 @@ will surface during inference. Promote if signals appear.
 
 ```
 1. Infer spec from context    ← อ่านจากที่ user บอก + codebase + existing agents
-2. Confirm with user          ← เสนอ spec — "ตรงไหนแก้บอก"
-   ถ้ามี uncertainty → ถามเพิ่ม 1-2 ข้อ (อย่าถามทั้ง 8 domains)
-3. Build                      ← user confirm = approval
+2. Present mini-spec          ← ใช้ format ตายตัวด้านล่าง
+3. User marks up              ← "ตรงไหนแก้บอก"
+   ถ้า markup เป็น trivial (1-2 คำ, แก้ชื่อ format เล็กน้อย)
+     → Build ได้เลย
+   ถ้า markup เป็น structural (เพิ่ม cap, เปลี่ยน tool, แก้ boundary)
+     → present revised mini-spec ก่อน → user confirm → Build
+4. Build
 ```
 
-### Output
+### Mini-Spec Format (ตายตัว)
 
-A condensed Agent Spec (1-page brief). Skip sections that are obvious.
+```
+## Quick Spec: [Name]
 
-For **modifications to existing agents**, output only changed fields
-(= "diff spec").
+Job: [หนึ่งประโยค — "ทำอะไร เพื่อใคร ให้ได้อะไร"]
+Capabilities:
+  - [action 1]
+  - [action 2]
+Boundaries:
+  - [ห้ามทำอะไร]
+Tools: [tool ที่ใช้ / ไม่ต้องเพิ่ม]
+Approval: [Confirmed via Quick / Revised & Confirmed]
+```
+
+ห้ามย่อหรือข้าม fields นี้ — ถ้า field ไหน obvious ให้เขียน "—" (ไม่ต้องถาม user)
+ถ้า modify existing agent → ใช้ format เดียวกัน แต่แสดงเฉพาะ field ที่เปลี่ยน
 
 ### Example
 
@@ -194,19 +218,29 @@ Infer:
   Archetype: Scribe
   Capability: read email → bullet summary
   Tools: Gmail MCP (มีอยู่แล้ว)
-  Risk: ต่ำ, read-only
-  I/O: input = email → output = summary markdown
   Ecosystem: อยู่กับ steward
 
-Confirm:
-  "Infer มาแบบนี้ — สรุปไทย/อังกฤษ?
-   สรุปทุกฉบับหรือเฉพาะหัวข้อ?
-   เก็บ log ไหม?"
+Present mini-spec:
+  ## Quick Spec: mail-summarizer
+
+  Job: อ่าน Gmail → สรุป bullet point ให้ Mike ทุกเช้า
+  Capabilities:
+    - อ่านเมล์จาก Gmail MCP → สรุปเป็น bullet points
+    - แยกตาม sender / subject
+  Boundaries:
+    - ห้ามตอบเมล์, ห้ามลบเมล์
+  Tools: Gmail MCP (มีอยู่แล้ว)
+  Approval: —
+
+  "ภาษาไทย/อังกฤษ? ทุกฉบับหรือเฉพาะหัวข้อ?"
 
 User: "ไทย, ทุกฉบับ, ไม่ต้อง log"
+  (trivial markup — ส่ง Build)
 
 Build.
-  → Spec: condensed, one-liner Status: Approved via Quick
+  ## Quick Spec: mail-summarizer
+  ...
+  Approval: Confirmed via Quick
 ```
 
 ---
@@ -222,7 +256,7 @@ is insufficient (complex integrations, ecosystem impact, or unclear scope).
 1. Intent Gate       → Restate, identify archetype, user + goal + constraint
 2. Codebase Scan     → Read index.md, opencode.jsonc, AGENTS.md, existing agents
                        (ถ้าไม่มี → greenfield: skip, ไป present draft เลย)
-3. Archetype Match   → Select archetype, apply skip list
+3. Archetype Match   → Select archetype, apply minimize list
 4. Present Draft     → Infer full spec from known context → present 1-page draft
                        ถามเฉพาะ uncertainty (ไม่ใช่ถามทีละข้อ)
 5. User Mark Up      → User edits / adds / removes from draft
@@ -239,7 +273,7 @@ is insufficient (complex integrations, ecosystem impact, or unclear scope).
 1. Infer draft spec จาก context ที่มี → **present single-page draft** ให้ user
 2. User อ่านแล้ว mark up (แก้/เพิ่ม/ลบ)
 3. ใช้ checklist ด้านล่างตรวจสอบว่ามีอะไรตก — **ถามเฉพาะที่ draft ไม่ครอบคลุม**
-4. Apply Archetype Skip List — ถ้า archetype skip domain ไหน อย่าถาม
+4. Apply Archetype Minimize List — brief / skip-if-obvious / deep-dive ตาม archetype
 
 ห้ามถามทีละข้อจาก checklist ไล่ไปเรียง — present draft ก่อน, ถามเฉพาะ gap
 
@@ -419,8 +453,8 @@ Codebase Scan:
   → No existing code-review agent → greenfield for this specific agent
 
 Archetype Match:
-  Developer → skip Lifecycle, Identity
-  Focus on Capabilities + Ecosystem + I/O
+  Developer → Lifecycle = brief, Identity = brief (frontmatter only)
+  Focus deep-dive on Capabilities + Ecosystem + I/O
 
 Present Draft → User marks up:
 
@@ -511,7 +545,7 @@ User request
     │                                           │
     │  ┌─────────────────────────────────────┐  │
     │  │  3. PRESENT DRAFT                   │  │
-    │  │  Infer + apply skip list → 1-page   │  │
+    │  │  Infer + apply minimize list → 1pg  │  │
     │  │  draft → user marks up              │  │
     │  └─────────────────────────────────────┘  │
     │                                           │
