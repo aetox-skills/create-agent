@@ -157,7 +157,8 @@ Promotion note:
 For simple agents and small changes. Infer the spec from context, confirm
 with the user, build. No full interview, no separate approval gate.
 
-Don't overthink this layer. If uncertain whether it fits Quick, use Standard.
+Don't overthink this layer. If uncertain, still start here — complexity
+will surface during inference. Promote if signals appear.
 
 ### Entry Criteria
 
@@ -212,7 +213,8 @@ Build.
 
 ## Layer 2 — Standard
 
-For new agents and significant changes. The default layer.
+For new agents and significant changes. Promote to Standard when Quick
+is insufficient (complex integrations, ecosystem impact, or unclear scope).
 
 ### Process
 
