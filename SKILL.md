@@ -1,12 +1,9 @@
 ---
 name: create-agent
 description: >-
-  Scope-first AI agent design discipline. Requires structured interview before
-  creating or modifying any AI agent. Supports 4 depth layers (Sketch, Standard,
-  Deep, Critical) with checkpoint gates, escalation rules, and an Agent Spec
-  output. Every layer includes a minimum-viable scope validation.
-  Use when asked to design, create, modify, or define a new AI agent.
-  Do not skip scope validation — even for small changes.
+  Use this skill to design or modify AI agents with a scope-first process.
+  Clarifies mission, boundaries, authority, inputs, outputs, risks, metrics,
+  tools, tests, and stop conditions before producing an Agent Spec.
 ---
 
 # Create Agent
@@ -24,9 +21,7 @@ can use to build the agent correctly.
 Every agent spec defines 8 dimensions:
 
 ```
-Archetype  →  Personality  →  Capabilities  →  Ecosystem
-                                              ↓
-Memory     ←  Lifecycle    ←  Risk/Metrics   ←  I/O
+Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → Lifecycle → Risk/Metrics
 ```
 
 ---
@@ -35,8 +30,8 @@ Memory     ←  Lifecycle    ←  Risk/Metrics   ←  I/O
 
 1. **Scope before build** — No code, no prompt, no tool config until scope is
    validated. Zero exceptions.
-2. **Depth before breadth** — Choose the right layer first. Do not default to
-   the deepest layer. Do not skip layers.
+2. **Minimum sufficient depth** — Select the lightest layer that can safely
+   define the agent. Promote only when explicit signals appear.
 3. **Codebase-first** — If the answer to a question exists in config, docs,
    or existing agents — go find it. Do not ask.
 4. **One question at a time** — Ask, wait for answer, then ask the next.
@@ -771,8 +766,7 @@ Ask one question at a time. Each question follows from the previous answer.
 Do not jump across domains.
 
 ```
-Identity → Archetype → Personality → Capabilities → I/O → Ecosystem
-  → Memory → Lifecycle → Risk → Metrics
+Identity → Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → Lifecycle → Risk/Metrics
 ```
 
 Stay in the current domain until it's resolved. Only move to the next domain

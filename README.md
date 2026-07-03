@@ -14,7 +14,7 @@ Create Agent forces a stop before any of that.
 The skill designs agents across **8 dimensions**:
 
 ```
-Archetype → Personality → Capabilities → Ecosystem → I/O → Memory → Lifecycle → Metrics
+Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → Lifecycle → Risk/Metrics
 ```
 
 It operates at **4 depth layers**:
@@ -124,24 +124,24 @@ skill("create-agent")
 │                          Rules (Rule + Scenario  │
 │                          + Consequence)          │
 │                                                  │
-│  [3] TOOL MAPPING ⬅── หลัง capabilities ชัด     │
-│       └─ แต่ละ capability → tool category        │
-│       └─ search codebase → มีอะไรอยู่แล้ว?        │
-│       └─ propose categories (ไม่指名 tools)     │
+│       │  └─ TOOL MAPPING ⬅── หลัง capabilities    │
+│       │     ชัด → แต่ละ capability → tool         │
+│       │     category → search codebase → propose │
+│       │     categories (ไม่指名 tools)           │
 │                                                  │
-│  [4] I/O + DELIVERABLES ── input/output format   │
+│  [3] I/O + DELIVERABLES ── input/output format   │
 │                            deliverables template  │
 │                                                  │
-│  [5] ECOSYSTEM         ─── platform, team,       │
+│  [4] ECOSYSTEM         ─── platform, team,       │
 │                          dependencies, comms     │
 │                                                  │
-│  [6] MEMORY & LEARNING ─── session, persistent   │
+│  [5] MEMORY & LEARNING ─── session, persistent   │
 │                          knowledge accumulation  │
 │                                                  │
-│  [7] LIFECYCLE         ─── trigger, duration,    │
+│  [6] LIFECYCLE         ─── trigger, duration,    │
 │                          maintenance, retirement │
 │                                                  │
-│  [8] RISK + METRICS    ─── failure modes,        │
+│  [7] RISK + METRICS    ─── failure modes,        │
 │                          safety, 3+ KPIs         │
 │                          (accuracy, speed,        │
 │                           efficiency, quality,    │

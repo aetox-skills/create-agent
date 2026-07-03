@@ -7,6 +7,16 @@ Status: [Proposed / Approved / In Progress / Built]
 
 ---
 
+## Agent Anatomy
+
+| Layer | Content | Loading Behavior |
+|-------|---------|------------------|
+| Identity | name, description, trigger | Always visible |
+| Instruction | role, rules, workflow, output | Loaded on activation |
+| Resource | docs, skills, tool refs, evals | Loaded on demand |
+
+---
+
 ## Identity
 
 - **Name:**
@@ -45,17 +55,44 @@ Status: [Proposed / Approved / In Progress / Built]
 | | | |
 | | | |
 
-### Tools & MCPs
+### Authority Level
 
-| Tool/MCP | Purpose | Config | Auth |
-|----------|---------|--------|------|
-| | | | |
+Level: [L1 Read-only / L2 Suggest / L3 Modify in scope / L4 Execute validation / L5 Autonomous bounded]
+
+**Allowed:**
+-
+
+**Requires approval:**
+-
+
+**Forbidden:**
+-
+
+### Stop Conditions
+
+The agent must stop when:
+
+- [ ] Requirement is unclear
+- [ ] Requested action exceeds scope
+- [ ] Another agent owns the responsibility
+- [ ] Required input is missing
+- [ ] Validation cannot be performed
+- [ ] Safety, data, permission, or cost risk appears
 
 ### Delegation
 
 | When | To Whom | What Passed |
 |------|---------|-------------|
 | | | |
+
+---
+
+## Tool Mapping
+
+| Capability | Tool Category Needed | Existing Option | Gap | Recommendation |
+|-----------|----------------------|-----------------|-----|----------------|
+| | | | | |
+| | | | | |
 
 ---
 
@@ -91,6 +128,13 @@ Status: [Proposed / Approved / In Progress / Built]
 | Dep | Required? | Fallback? |
 |-----|-----------|-----------|
 | | | |
+
+### Overlap Detection
+
+| Area | Existing Owner | Conflict? | Resolution |
+|------|----------------|-----------|------------|
+| | | | |
+| | | | |
 
 ---
 
@@ -147,6 +191,15 @@ Status: [Proposed / Approved / In Progress / Built]
 
 ---
 
+## Agent Test Plan
+
+| Capability | Test Prompt | Expected Output | Edge Cases |
+|-----------|-------------|-----------------|------------|
+| | | | |
+| | | | |
+
+---
+
 ## Approval
 
 | Item | Approved? | Approver | Date |
@@ -154,6 +207,15 @@ Status: [Proposed / Approved / In Progress / Built]
 | Spec | | | |
 | Cost | | | |
 | Safety | | | |
+
+---
+
+## Iteration Log
+
+| Iteration | Change | Before | After | Test Result | Known Issues |
+|-----------|--------|--------|-------|-------------|--------------|
+| 1 | | | | | |
+| 2 | | | | | |
 
 ---
 
