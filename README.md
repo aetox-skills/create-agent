@@ -11,18 +11,23 @@ Create Agent forces a stop before any of that.
 
 **ถามขอบเขตให้ชัด ก่อนสร้าง** — This is the core.
 
-Before writing a single line, you go through a structured Scope Interview that
-answers six questions:
-1. Identity & Purpose — agent นี้คือใคร?
-2. Capabilities & Boundaries — ทำอะไรได้/ไม่ได้?
-3. Input / Output — รับอะไร ส่งอะไร?
-4. Ecosystem — อยู่กับใคร? ใช้ tool อะไร?
-5. Lifecycle — ใช้ตอนไหน? อยู่นานแค่ไหน?
-6. Risk & Constraints — failure mode? cost? safety?
+The skill operates at **4 depth layers**, so you never over-engineer a simple
+agent or under-scope a complex one:
+
+```
+Layer 1 — Sketch      (5 quick questions for small changes)
+Layer 2 — Standard    (full 6-domain Scope Interview)
+Layer 3 — Deep        (adds ecosystem map + dependency trace)
+Layer 4 — Critical    (adds risk model + cost model + safety gates)
+```
+
+Every layer produces a validated **Agent Spec** — the difference is completeness.
 
 The skill borrows 7 questioning techniques from `grill-with-docs`:
 Decision Tree Walk, One at a Time, Recommend an Answer, Codebase-First,
 Sharpen Fuzzy Language, Concrete Scenarios, and Cross-Reference.
+
+Plus checkpoint gates (Intent → Scope → Spec → Build) to prevent skipping.
 
 ## Use When
 
@@ -71,8 +76,8 @@ create-agent/
 ├── INSTALL.md       ← วิธีติดตั้งแต่ละ platform
 ├── CHANGELOG.md     ← ประวัติการเปลี่ยนแปลง
 ├── LICENSE          ← MIT
-├── .gitignore
-└── templates/       ← (เร็วๆ นี้) agent spec templates
+└── templates/
+    └── agent-spec.md ← template output spec
 ```
 
 ## License
