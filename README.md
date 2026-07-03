@@ -1,0 +1,80 @@
+# Create Agent
+
+**Scope-first AI agent design skill — ถามขอบเขตให้ชัด ก่อนสร้างเอเจน**
+
+---
+
+## What Makes Create Agent Different?
+
+Most agent builders jump straight into prompt writing, tool config, and code.
+Create Agent forces a stop before any of that.
+
+**ถามขอบเขตให้ชัด ก่อนสร้าง** — This is the core.
+
+Before writing a single line, you go through a structured Scope Interview that
+answers six questions:
+1. Identity & Purpose — agent นี้คือใคร?
+2. Capabilities & Boundaries — ทำอะไรได้/ไม่ได้?
+3. Input / Output — รับอะไร ส่งอะไร?
+4. Ecosystem — อยู่กับใคร? ใช้ tool อะไร?
+5. Lifecycle — ใช้ตอนไหน? อยู่นานแค่ไหน?
+6. Risk & Constraints — failure mode? cost? safety?
+
+The skill borrows 7 questioning techniques from `grill-with-docs`:
+Decision Tree Walk, One at a Time, Recommend an Answer, Codebase-First,
+Sharpen Fuzzy Language, Concrete Scenarios, and Cross-Reference.
+
+## Use When
+
+- พี่ Mike บอกว่า "สร้าง agent ตัวนี้ให้หน่อย"
+- ต้องออกแบบ agent ใหม่ ตั้งแต่ identity → capabilities → ecosystem
+- ปรับปรุง agent ที่มีอยู่ ต้องการ scope ใหม่
+- สร้าง spec agent เพื่อให้ agent อื่นหรือคนอื่นมาสร้างต่อ
+
+## Do Not Use When
+
+- แค่แก้ prompt เล็กน้อยใน agent ที่มีอยู่แล้ว
+- งาน DevOps หรือ deploy ที่ไม่เกี่ยวกับ agent design
+- งานทั่วไปที่ steward ทำอยู่แล้ว (research, git, config)
+
+## Relationship To Other Aetox Skills
+
+| Skill | ความแตกต่าง |
+|-------|------------|
+| [`idea-to-architecture-agent`](https://github.com/aetox-skills/idea-to-architecture-agent) | scope-first สำหรับระบบ software ทั่วไป — อันนี้ focus ที่ AI agent โดยเฉพาะ |
+| [`docstruct`](https://github.com/aetox-skills/docstruct) | จัดโครงสร้าง docs — อันนี้ design behavior + structure ของ agent |
+| [`senior-architect-agent`](https://github.com/aetox-skills/senior-architect-agent) | map ระบบที่มีอยู่แล้ว — อันนี้ design agent ใหม่ตั้งแต่ต้น |
+
+## Quick Use
+
+```bash
+# OpenCode (ผ่าน skill system)
+skill("create-agent")
+
+# หรือเปิด SKILL.md โดยตรง
+```
+
+## Compatibility
+
+- OpenCode — skill system
+- Claude Code — วาง SKILL.md ในโปรเจคหรือ `~/.claude/skills/`
+- ZCode — วางใน `~/.zcode/skills/`
+- Codex — วางใน `.codex/skills/`
+- AI agent ทั่วไป — copy content ของ SKILL.md ใส่ system prompt
+
+## Repository Structure
+
+```
+create-agent/
+├── README.md        ← อยู่นี่
+├── SKILL.md         ← ตัวสกิล (รวม Scope Interview + Grill Methodology)
+├── INSTALL.md       ← วิธีติดตั้งแต่ละ platform
+├── CHANGELOG.md     ← ประวัติการเปลี่ยนแปลง
+├── LICENSE          ← MIT
+├── .gitignore
+└── templates/       ← (เร็วๆ นี้) agent spec templates
+```
+
+## License
+
+MIT
