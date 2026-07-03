@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.5.1 (2026-07-03)
+
+- **Default layer changed to Quick** — every session starts at Quick, escalate
+  to Standard only when complexity signals appear
+- **Interview style: present draft → user marks up** — instead of "one question
+  at a time" across 8 domains, AI infers a draft spec and asks only gaps
+- **Iron Rule #5 renamed** — "One question at a time" → "Minimize round-trips"
+- **Iron Rule #7 reworded** — scope to spec approval only (interview responses
+  don't need formal documentation)
+- **Archetype catalog** column renamed: "Default Layer" → "Suggested Layer" with
+  Quick as starting point for most archetypes
+- **Workflow diagram** updated: Quick labeled DEFAULT, Standard path redesigned
+  (draft → checklist gaps → propose → approve)
+- All changes from Opus 4.6 round-2 feedback re: reducing ceremony tax
+
 ## v0.5.0 (2026-07-03)
 
 **Major refactor based on Opus 4.6 feedback.** Key changes:

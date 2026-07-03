@@ -30,8 +30,8 @@ Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → 
 
 1. **Scope before build** — No code, no prompt, no tool config until scope is
    validated. Zero exceptions.
-2. **Minimum sufficient depth** — Select the lightest layer that can safely
-   define the agent. Promote only when explicit signals appear.
+2. **Minimum sufficient depth** — Default to Quick. Promote to Standard/Deep/
+   Critical only when explicit signals appear. Do not start at Standard.
 3. **Infer first, ask later** — Before asking a question, try to infer the
    answer from context, codebase, existing agents, and what the user already
    said. Only ask about what remains genuinely uncertain.
@@ -40,14 +40,14 @@ Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → 
    **Greenfield exception:** If no codebase exists (no index.md, AGENTS.md,
    opencode.jsonc, or existing agents), skip codebase scan and go directly
    to the interview.
-5. **One question at a time** — Ask, wait for answer, then ask the next.
-   Do not dump 10 questions at once.
+5. **Minimize round-trips** — Infer spec → present draft → let user mark up.
+   Ask one-at-a-time only for genuine gaps the draft can't resolve. Never
+   dump 10 questions at once.
 6. **Recommend, don't open-ended** — Every question must include a
    recommended answer. Give something to react to.
-7. **State explicit** — Never proceed on implicit understanding.
-   If it's not written, it's not agreed.
-   **Quick-layer exception:** User confirmation of an inferred spec counts
-   as explicit agreement. Document it in one line (`Status: Approved via Quick`).
+7. **Spec must be approved** — Never build until the Agent Spec is explicitly
+   approved. For Quick layer, user confirmation of the inferred spec counts
+   as approval. Document it as `Status: Approved via Quick`.
 8. **Stop on signal** — When the user says "enough" or "stop" — stop.
    Do not argue, do not push for more.
 9. **Output an Agent Spec** — Every session produces a validated spec, even
@@ -62,16 +62,16 @@ right archetype and understand which interview domains to focus on or skip.
 
 ### Archetype Catalog
 
-| # | Archetype | Core Purpose | Default Personality | Typical Tools | Default Layer |
-|:-:|-----------|-------------|--------------------|--------------|:-------------:|
-| 🛠️ | **System** | Automate, config, maintain | Practical, concise, direct | CLI, filesystem, Docker, git | Standard |
-| 🎨 | **Creative** | Design, visual, motion | Expressive, detail-oriented | Tailwind, GSAP, image APIs | Standard |
-| 💻 | **Developer** | Code, architecture, debug | Technical, precise, thorough | MCPs, linters, test runners | Deep |
-| 📝 | **Scribe** | Document, write, organize | Clear, structured, patient | Obsidian, markdown, search | Standard |
-| 🔬 | **Specialist** | Deep single domain | Authoritative, meticulous | Domain-specific CLI/MCP | Deep |
-| 🎯 | **Orchestrator** | Coordinate, delegate, manage | Systematic, process-driven | Agent list, handoff protocol | Critical |
-| 🔍 | **Researcher** | Search, analyze, synthesize | Curious, analytical, thorough | Exa, Firecrawl, web tools | Standard |
-| 🎮 | **Game** | Game-specific behavior | Playful, adaptive | Game API, bot framework | Deep |
+| # | Archetype | Core Purpose | Default Personality | Typical Tools | Suggested Layer |
+|:-:|-----------|-------------|--------------------|--------------|:--------------:|
+| 🛠️ | **System** | Automate, config, maintain | Practical, concise, direct | CLI, filesystem, Docker, git | Quick → Standard |
+| 🎨 | **Creative** | Design, visual, motion | Expressive, detail-oriented | Tailwind, GSAP, image APIs | Quick → Standard |
+| 💻 | **Developer** | Code, architecture, debug | Technical, precise, thorough | MCPs, linters, test runners | Quick → Deep |
+| 📝 | **Scribe** | Document, write, organize | Clear, structured, patient | Obsidian, markdown, search | Quick |
+| 🔬 | **Specialist** | Deep single domain | Authoritative, meticulous | Domain-specific CLI/MCP | Quick → Deep |
+| 🎯 | **Orchestrator** | Coordinate, delegate, manage | Systematic, process-driven | Agent list, handoff protocol | Quick → Critical |
+| 🔍 | **Researcher** | Search, analyze, synthesize | Curious, analytical, thorough | Exa, Firecrawl, web tools | Quick |
+| 🎮 | **Game** | Game-specific behavior | Playful, adaptive | Game API, bot framework | Quick → Deep |
 
 ### Archetype Skip List
 
@@ -103,11 +103,12 @@ Example: "This sounds like a Developer archetype with some Specialist overlap.
 ## Depth Layer System
 
 Not every agent needs the same depth. This skill defines **4 layers**.
+**Default to Quick.** Start light, escalate only when signals demand it.
 
 ```
 Layer 1 — Quick       (infer → confirm → build, ถามเพิ่มถ้า uncertain)
-                       │
-Layer 2 — Standard    (Full 8-domain Scope Interview — default)
+                       │                          ← DEFAULT
+Layer 2 — Standard    (Present draft → user marks up → approve)
                        │
 Layer 3 — Deep        (Standard + Ecosystem Map + Dependency Trace)
                        │
@@ -130,7 +131,7 @@ Layer 4 — Critical    (Deep + Risk Model + Cost Model + Safety Gates)
 | Archetype = Orchestrator | — | — | — | ✅ |
 | Archetype = Specialist | — | — | ✅ | — |
 
-**Default to Standard.** Promote only when explicit signals are present.
+**Default to Quick.** Promote only when explicit signals are present.
 
 **Escalation rule:** If during a lower-layer interview you discover signals
 that warrant a higher layer, promote explicitly:
@@ -211,18 +212,27 @@ For new agents and significant changes. The default layer.
 ```
 1. Intent Gate       → Restate, identify archetype, user + goal + constraint
 2. Codebase Scan     → Read index.md, opencode.jsonc, AGENTS.md, existing agents
-                       (ถ้าไม่มี → greenfield: skip, ไป interview เลย)
+                       (ถ้าไม่มี → greenfield: skip, ไป present draft เลย)
 3. Archetype Match   → Select archetype, apply skip list
-4. Scope Interview   → Full 8-domain (skipping per archetype skip list)
-5. Propose Spec      → Full Agent Spec (see templates/agent-spec.md)
-6. Approval Gate     → User approves before build
+4. Present Draft     → Infer full spec from known context → present 1-page draft
+                       ถามเฉพาะ uncertainty (ไม่ใช่ถามทีละข้อ)
+5. User Mark Up      → User edits / adds / removes from draft
+6. Iterate (if needed) → ถ้ามี gap → present revised draft
+7. Propose Spec      → Full Agent Spec (see templates/agent-spec.md)
+8. Approval Gate     → User approves before build
 ```
 
 ### Scope Interview (8 Domains)
 
-สำหรับ Quick layer: ข้ามทั้งหมด (infer + confirm เอาตั้งแต่ต้น)
-สำหรับ Standard+: ใช้ checklist ด้านล่าง แต่ apply Archetype Skip List ก่อน
-ถ้า archetype skip domain ไหน — อย่าถาม
+**สำหรับ Quick layer:** ข้ามทั้งหมด — infer + confirm ตั้งแต่ต้น
+
+**สำหรับ Standard+:** 
+1. Infer draft spec จาก context ที่มี → **present single-page draft** ให้ user
+2. User อ่านแล้ว mark up (แก้/เพิ่ม/ลบ)
+3. ใช้ checklist ด้านล่างตรวจสอบว่ามีอะไรตก — **ถามเฉพาะที่ draft ไม่ครอบคลุม**
+4. Apply Archetype Skip List — ถ้า archetype skip domain ไหน อย่าถาม
+
+ห้ามถามทีละข้อจาก checklist ไล่ไปเรียง — present draft ก่อน, ถามเฉพาะ gap
 
 #### Domain 1: Identity & Purpose
 
@@ -391,7 +401,7 @@ Intent Gate:
   User: Mike (dev, Thai)
   Goal: PR review automation
   Constraint: ทำงานกับ GitHub PRs เท่านั้น
-  Layer: Standard (default — new agent, single purpose)
+  Layer: Quick → escalate to Standard (PR review is complex enough)
 
 Codebase Scan:
   → index.md มี steward, minecrafter agents
@@ -403,7 +413,9 @@ Archetype Match:
   Developer → skip Lifecycle, Identity
   Focus on Capabilities + Ecosystem + I/O
 
-Scope Interview:
+Present Draft → User marks up:
+
+  (AI presents inferred draft:)
 
   (Identity) Name: "pr-reviewer"
   Archetype: Developer
@@ -442,8 +454,12 @@ Scope Interview:
   Metric: "False positive rate <10%"
     Measure: flagged issues rejected by human reviewer / total flags
 
-Propose Spec → Full spec via templates/agent-spec.md
-Approval Gate → User approves → Build
+  (User marks up:)
+  "เพิ่ม capability: auto-post review comments ไป PR ด้วยเลย
+   Memory: เก็บประวัติ PR ที่ review แล้ว — อย่า review ซ้ำ
+   Metric: ลดเหลือ 1 ข้อ — false positive rate ก็พอ"
+
+  (AI revises draft → Propose Spec → Approval → Build)
 ```
 
 ---
@@ -468,37 +484,44 @@ User request
   │  Deep / Critical. Write justification.      │
   └─────────────────────────────────────────────┘
     │
-    ├── Layer = Quick ──────────────────────────┤
+    ├── DEFAULT: Layer = Quick ────────────────┤
+    │  (start here for every session)           │
     │                                           │
     │  ┌─────────────────────────────────────┐  │
-    │  │  3. INFER + CONFIRM                │  │
+    │  │  3. INFER → PRESENT DRAFT           │  │
     │  │  Infer spec จาก context + codebase  │  │
-    │  │  → เสนอ condensed spec              │  │
-    │  │  → user confirm → BUILD             │  │
-    │  │  (ถ้า modify → output เฉพาะที่เปลี่ยน) │  │
+    │  │  → เสนอ condensed spec               │  │
+    │  │  → user mark up                     │  │
+    │  │  → ถ้า scope ชัด → BUILD             │  │
     │  └─────────────────────────────────────┘  │
+    │                                           │
+    ├── IF complexity detected ────────────────┤
+    │  Promote to Standard / Deep / Critical    │
     │                                           │
     ├── Layer = Standard / Deep / Critical ─────┤
     │                                           │
     │  ┌─────────────────────────────────────┐  │
-    │  │  3. SCOPE INTERVIEW                 │  │
-    │  │  Apply archetype skip list.         │  │
-    │  │  Standard → 8 domains (skip per     │  │
-    │  │    archetype)                        │  │
-    │  │  Deep → + Ecosystem + deps           │  │
-    │  │  Critical → + Risk + Cost + Safety  │  │
-    │  │                                     │  │
-    │  │  Infer-first: only uncertain Qs     │  │
+    │  │  3. PRESENT DRAFT                   │  │
+    │  │  Infer + apply skip list → 1-page   │  │
+    │  │  draft → user marks up              │  │
     │  └─────────────────────────────────────┘  │
     │                                           │
     │  ┌─────────────────────────────────────┐  │
-    │  │  4. PROPOSE SPEC                    │  │
+    │  │  4. CHECKLIST GAPS                  │  │
+    │  │  Standard → check 8 domains         │  │
+    │  │  Deep → + Ecosystem + deps           │  │
+    │  │  Critical → + Risk + Cost + Safety  │  │
+    │  │  Ask ONLY what draft doesn't cover  │  │
+    │  └─────────────────────────────────────┘  │
+    │                                           │
+    │  ┌─────────────────────────────────────┐  │
+    │  │  5. PROPOSE SPEC                    │  │
     │  │  Full Agent Spec (templates/agent-  │  │
     │  │  spec.md). Present to user.         │  │
     │  └─────────────────────────────────────┘  │
     │                                           │
     │  ┌─────────────────────────────────────┐  │
-    │  │  5. APPROVAL GATE                   │  │
+    │  │  6. APPROVAL GATE                   │  │
     │  │  User approves / revise / reject.   │  │
     │  │  No build until approved.           │  │
     │  └─────────────────────────────────────┘  │
@@ -518,10 +541,12 @@ User request
 
 ## Questioning Technique
 
-### T0: Infer-First (Primary)
+**Infer → Present draft → User marks up → Ask only gaps.**
 
-**Before asking anything, try to fill the spec from what you already know.**
-Then ask only the gaps.
+### T0: Infer-First (Primary, always)
+
+**Infer spec from available context before you open your mouth.**
+Present the draft to the user. Let them edit it.
 
 ```
 User: "อยากได้ agent ที่สรุปเมล์หน่อย"
@@ -530,22 +555,29 @@ Infer (จาก context + codebase):
   Archetype: Scribe
   Capability: read mail → bullet summary
   Tools: Gmail MCP (มีอยู่แล้ว)
-  Risk: ต่ำ, read-only
   Ecosystem: อยู่กับ steward
 
-Ask (เฉพาะที่ยัง uncertain):
-  "สรุปภาษาไทยหรืออังกฤษ? สรุปทุกฉบับหรือเฉพาะหัวข้อ?"
+Present draft:
+  "Infer มาแบบนี้:
+   - สรุปภาษาไทย
+   - สรุปทุกฉบับ (ไม่เฉพาะหัวข้อ)
+   - ไม่เก็บ log
+
+   ถูกไหม หรืออยากแก้ตรงไหน?"
+
+User: "ภาษาไทยถูก แต่ขอเฉพาะเมล์จากผู้รับบางคน"
 ```
 
-### T1: Decision Tree Walk
+### T1: Decision Tree Walk (fallback — for genuine gaps)
 
-เมื่อต้องถาม — ถามทีละขั้น อย่ากระโดดข้าม domain
+Presenting the draft didn't clear everything. Now walk in order,
+but still recommend not ask.
 
 ```
-Identity → Personality → Capabilities → I/O → Ecosystem → Memory → Lifecycle → Risk/Metrics
+Identity → Capabilities → I/O → Ecosystem → Memory → Lifecycle → Risk/Metrics
 ```
 
-### T2: Recommend an Answer
+### T2: Recommend an Answer (always)
 
 ทุกคำถามควรมี recommendation — อย่าถามปลายเปิด
 

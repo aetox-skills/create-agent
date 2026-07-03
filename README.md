@@ -28,22 +28,25 @@ The skill designs agents across **8 dimensions**:
 Archetype → Personality → Capabilities → I/O → Ecosystem → Memory → Lifecycle → Risk/Metrics
 ```
 
-It operates at **4 depth layers**:
+It operates at **4 depth layers**, **defaulting to Quick**:
 
 ```
-Layer 1 — Quick      (infer + confirm + build — สำหรับของง่ายๆ)
-Layer 2 — Standard   (full 8-domain Scope Interview — default)
+Layer 1 — Quick      (infer → present draft → user marks up → build)
+Layer 2 — Standard   (8-domain scope validation after draft)
 Layer 3 — Deep       (Standard + ecosystem map + dependency trace)
 Layer 4 — Critical   (Deep + risk model + cost model + safety gates)
 ```
+
+**Default is Quick.** Start every session at Quick. Escalate to Standard/
+Deep/Critical only when complexity signals demand it.
 
 With an **Archetype System** (8 archetypes) with **skip lists** — telling
 each archetype which interview domains to skip, not relative weights.
 
 Plus:
-- **Iron Rules** — scope-first, infer-before-ask, minimum-sufficient-depth
-- **Infer-First questioning** — fill spec from context before asking
-- **Quick path** — for trivial agents: infer → confirm → build, no gate
+- **Iron Rules** — scope-first, minimize-round-trips, infer-first
+- **Draft-first interview** — present 1-page spec → user marks up → done
+- **Quick path** — for trivial agents: infer → draft → confirm → build
 - **Diff spec** — when modifying, output only changed fields
 - **Checkpoint gates** (Intent → Spec) — light enough for daily use
 
@@ -109,40 +112,47 @@ skill("create-agent")
 ┌───────────────────────────────────────────────────┐
 │ ② SELECT LAYER                                   │
 │ ─────────────────────────────────────────────    │
-│ · Quick    → infer + confirm + build (ของเล็ก)   │
-│ · Standard → 8-domain full interview (default)   │
+│ · Quick    → infer → present draft → build       │
+│              (DEFAULT — เริ่มทุก session ที่นี่)   │
+│ · Standard → draft + 8-domain gap check          │
 │ · Deep     → Standard + ecosystem map + deps     │
 │ · Critical → Deep + risk + cost + safety         │
-│ เขียน justification เพราะเลือก layer นี้        │
+│ เขียน justification ถ้าไม่ใช่ Quick             │
 └───────────────────────────────────────────────────┘
                       │
           ┌───────────┴───────────┐
           ▼                       ▼
   ┌─────────────────┐   ┌─────────────────────────────┐
-  │ QUICK PATH      │   │ STANDARD / DEEP / CRITICAL  │
+  │ QUICK (DEFAULT) │   │ STANDARD / DEEP / CRITICAL  │
   │                 │   │                             │
-  │ 3. INFER +      │   │ 3. SCOPE INTERVIEW          │
-  │    CONFIRM      │   │   · Apply archetype skip    │
-  │   Infer spec →  │   │     list                    │
-  │   เสนอ → user   │   │   · 8 domains (skip per    │
-  │   confirm →     │   │     archetype)              │
-  │   BUILD         │   │   · Deep/Critical = extra   │
-  │                 │   │     steps per references/   │
-  └─────────────────┘   │     deep-critical.md        │
-          │             │                             │
-          │             │ 4. PROPOSE SPEC             │
-          │             │   · templates/agent-spec.md │
-          │             └─────────────┬───────────────┘
-          │                           │
-          │             ┌─────────────▼───────────────┐
-          │             │ 5. APPROVAL GATE            │
-          │             │   · Approve / Revise /      │
-          │             │     Reject                  │
-          │             │   · No build until approved │
-          │             └─────────────┬───────────────┘
-          │                           │
-          └───────────┬───────────────┘
-                      ▼
+  │ 3. INFER →      │   │ 3. PRESENT DRAFT            │
+  │    PRESENT      │   │   Infer spec + apply skip   │
+  │    DRAFT        │   │   → 1-page draft            │
+  │   Infer spec →  │   │   → user marks up           │
+  │   เสนอ condensed│   └─────────────┬───────────────┘
+  │   → user mark up│                 │
+  │   → BUILD       │   ┌─────────────▼───────────────┐
+  │                 │   │ 4. CHECKLIST GAPS           │
+  └────────┬────────┘   │   Walk 8 domains → ask     │
+           │            │   ONLY what draft misses    │
+           │            │   Deep/Critical = extra     │
+           │            │   steps per references/     │
+           │            └─────────────┬───────────────┘
+           │                          │
+           │            ┌─────────────▼───────────────┐
+           │            │ 5. PROPOSE SPEC             │
+           │            │   · templates/agent-spec.md │
+           │            └─────────────┬───────────────┘
+           │                          │
+           │            ┌─────────────▼───────────────┐
+           │            │ 6. APPROVAL GATE            │
+           │            │   · Approve / Revise /      │
+           │            │     Reject                  │
+           │            │   · No build until approved │
+           │            └─────────────┬───────────────┘
+           │                          │
+           └────────┬─────────────────┘
+                    ▼
 ┌───────────────────────────────────────────────────┐
 │ ⑥ BUILD / HANDOFF                                │
 │ ─────────────────────────────────────────────    │
@@ -173,12 +183,11 @@ skill("create-agent")
 ### One-liner Summary
 
 ```
-Quick path:    Infer spec → Confirm → Build
-Standard path: Intent Gate → Select Layer → Scope Interview
-               → Propose Spec → Approval Gate → Build / Handoff → Test Plan → Iteration Loop
+Quick (default):  Intent Gate → Infer spec → Present draft → User marks up → Build
+Standard+:        Draft → Checklist gaps → Propose Spec → Approval Gate → Build
 ```
 
-ตลอดทั้ง process: **Iron Rules** (scope-first, infer-first), **Questioning Technique** (Infer-First + Recommend), **Checkpoint Gates** (Intent → Spec)
+ตลอดทั้ง process: **Iron Rules** (scope-first, minimize-round-trips, infer-first), **Questioning Technique** (Infer → Present draft → Gap check), **Checkpoint Gates** (Intent → Spec)
 
 ## Repository Structure
 
