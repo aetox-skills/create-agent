@@ -2,6 +2,17 @@
 
 **Scope-first AI agent design skill — ถามขอบเขตให้ชัด ก่อนสร้างเอเจน**
 
+<div align="center">
+
+[![GitHub release](https://img.shields.io/github/v/release/aetox-skills/create-agent?style=flat-square)](https://github.com/aetox-skills/create-agent/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
+[![GitHub last commit](https://img.shields.io/github/last-commit/aetox-skills/create-agent?style=flat-square)](https://github.com/aetox-skills/create-agent/commits/main)
+[![GitHub repo size](https://img.shields.io/github/repo-size/aetox-skills/create-agent?style=flat-square)](https://github.com/aetox-skills/create-agent)
+[![GitHub stars](https://img.shields.io/github/stars/aetox-skills/create-agent?style=flat-square)](https://github.com/aetox-skills/create-agent)
+[![Static Badge](https://img.shields.io/badge/platform-Claude%20Code_%7C_OpenCode_%7C_Cursor-purple?style=flat-square)]()
+
+</div>
+
 ---
 
 ## What Makes Create Agent Different?
@@ -218,7 +229,7 @@ Standard path: Intent Gate → Select Archetype + Layer → Scope Interview
                → Propose Spec → Approval Gate → Build / Handoff → Test Plan → Iteration Loop
 ```
 
-ตลอดทั้ง process: **Agent Anatomy** เป็นกรอบโครงสร้าง, **Grill Methodology** เป็นเทคนิคการถาม, **Checkpoint Gates** คอยกันไม่ให้ข้ามขั้น
+ตลอดทั้ง process: **Agent Anatomy** เป็นกรอบโครงสร้าง, **Questioning Technique** เป็นเทคนิคการถาม (Infer-First ก่อน), **Checkpoint Gates** คอยกันไม่ให้ข้ามขั้น
 
 ## Repository Structure
 
@@ -232,6 +243,13 @@ create-agent/
 └── templates/
     └── agent-spec.md ← template output spec
 ```
+
+## Topics
+
+`agent-design` `agent-framework` `ai-agents` `scope-first` `agent-skills`
+`claude-code` `opencode` `agent-architecture` `agent-development` `ai-agent-tools`
+
+[Browse all repos in topic →](https://github.com/topics/agent-design)
 
 ## License
 
