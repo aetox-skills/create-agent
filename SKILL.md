@@ -21,6 +21,14 @@ This is **not** a prompt-writing skill. It is a **scope-validation** skill.
 The output is a validated **Agent Spec** — a blueprint that another AI or human
 can use to build the agent correctly.
 
+Every agent spec defines 8 dimensions:
+
+```
+Archetype  →  Personality  →  Capabilities  →  Ecosystem
+                                              ↓
+Memory     ←  Lifecycle    ←  Risk/Metrics   ←  I/O
+```
+
 ---
 
 ## Iron Rules
@@ -37,10 +45,61 @@ can use to build the agent correctly.
    recommended answer. Give something to react to.
 6. **State explicit** — Never proceed on implicit understanding.
    If it's not written, it's not agreed.
-7. **Stop on signal** — When the user says "enough" or "stop" — stop.
+7. **Personality is a requirement** — Every agent needs a defined character.
+   Default is neutral professional. Explicitly state if different.
+8. **Measure before you claim success** — Every agent needs at least 3 success
+   metrics before you call it done.
+9. **Stop on signal** — When the user says "enough" or "stop" — stop.
    Do not argue, do not push for more.
-8. **Output an Agent Spec** — Every session produces a validated spec, even
-   at Sketch layer.
+10. **Output an Agent Spec** — Every session produces a validated spec, even
+    at Sketch layer.
+
+---
+
+## Agent Archetype System
+
+Agents are not all the same. Their structure, personality, tools, and
+deliverables follow patterns based on their archetype.
+
+Use this table to understand what type of agent you are designing.
+This informs the Scope Interview — each archetype has different weight
+per domain.
+
+### Archetype Catalog
+
+| # | Archetype | Core Purpose | Default Personality | Typical Tools | Layer |
+|:-:|-----------|-------------|--------------------|--------------|-------|
+| 🛠️ | **System** | Automate, config, maintain | Practical, concise, direct | CLI, filesystem, Docker, git | Standard |
+| 🎨 | **Creative** | Design, visual, motion | Expressive, detail-oriented | Tailwind, GSAP, image APIs | Standard |
+| 💻 | **Developer** | Code, architecture, debug | Technical, precise, thorough | MCPs, linters, test runners | Deep |
+| 📝 | **Scribe** | Document, write, organize | Clear, structured, patient | Obsidian, markdown, search | Standard |
+| 🔬 | **Specialist** | Deep single domain | Authoritative, meticulous | Domain-specific CLI/MCP | Deep |
+| 🎯 | **Orchestrator** | Coordinate, delegate, manage | Systematic, process-driven | Agent list, handoff protocol | Critical |
+| 🔍 | **Researcher** | Search, analyze, synthesize | Curious, analytical, thorough | Exa, Firecrawl, web tools | Standard |
+| 🎮 | **Game** | Game-specific behavior | Playful, adaptive | Game API, bot framework | Deep |
+
+### How Archetypes Affect the Interview
+
+| Interview Domain | System | Creative | Developer | Scribe | Specialist | Orchestrator | Researcher | Game |
+|-----------------|--------|----------|-----------|--------|------------|--------------|------------|------|
+| **Identity** | Medium | **High** | Medium | Medium | **High** | Medium | Low | **High** |
+| **Capabilities** | **High** | Medium | **High** | Medium | **High** | Medium | **High** | Medium |
+| **I/O** | Low | **High** | Medium | **High** | Low | Low | Medium | Medium |
+| **Ecosystem** | **High** | Low | **High** | Low | Medium | **High** | Low | Low |
+| **Lifecycle** | Medium | Low | Medium | Medium | Low | **High** | Low | Medium |
+| **Risk/Metrics** | Medium | Low | Medium | Low | **High** | **High** | Low | Low |
+
+High = spend more time on this domain | Low = can be brief
+
+### Archetype Selection
+
+When interviewing, recommend an archetype based on the agent's purpose.
+If multiple archetypes fit, pick the dominant one and note secondary.
+
+```
+Example: "This sounds like a Developer archetype with some Specialist overlap.
+         I'll prioritize Capabilities and Ecosystem in the interview."
+```
 
 ---
 
@@ -52,7 +111,7 @@ Every layer produces an Agent Spec — the difference is completeness.
 ```
 Layer  Sketch ─── 5 questions, quick validation
                      │
-Layer  Standard ─── Full Scope Interview (6 domains)
+Layer  Standard ─── Full Scope Interview (8 domains)
                      │
 Layer  Deep ──────── Standard + Ecosystem Map + Dependency Trace
                      │
@@ -61,18 +120,20 @@ Layer  Critical ──── Deep + Risk Model + Cost Model + Safety Gates
 
 ### Layer Selection
 
-Choose the layer based on these signals:
+Choose the layer based on the archetype and these signals:
 
 | Signal | Sketch | Standard | Deep | Critical |
 |--------|--------|----------|------|----------|
 | Add 1-2 capabilities to existing agent | ✅ | — | — | — |
-| New agent, single purpose, no external deps | — | ✅ | — | — |
+| New agent, single purpose, no deps | — | ✅ | — | — |
 | New agent, 1-2 external integrations | — | ✅ | ✅ | — |
 | Agent in multi-agent ecosystem | — | — | ✅ | ✅ |
 | Agent handles payment / auth / PII | — | — | — | ✅ |
 | Agent deploys to production | — | — | — | ✅ |
 | Agent costs significant tokens per call | — | — | — | ✅ |
 | Safety or compliance implications | — | — | — | ✅ |
+| Archetype = Orchestrator | — | — | — | ✅ |
+| Archetype = Specialist | — | — | ✅ | — |
 
 **Default to Standard.** Promote only when explicit signals are present.
 Do not promote because of uncertainty alone.
@@ -99,17 +160,18 @@ a prompt adjustment, a tool addition to an existing agent.
 - Agent already exists.
 - Change is limited to 1-2 capabilities.
 - No new integrations, no ecosystem change.
+- Archetype does not change.
 
 ### Process
 
 1. **Intent Check** — Restate the request in one sentence.
 2. **5 Quick Questions:**
    - What changes? (capability / tool / prompt / behavior?)
-   - Does this change the agent's identity? (name, role, tone?)
+   - Does this change the agent's identity or personality?
    - Does this affect other agents in the ecosystem?
    - Is a new tool or MCP needed?
    - Is there a failure mode if this change goes wrong?
-3. **Propose Spec** — Output a condensed spec (1 page).
+3. **Propose Spec** — Output a condensed spec with only changed fields.
 4. **Confirm** — One-line approval from user.
 
 ### Output
@@ -126,73 +188,183 @@ The default layer for any agent design task.
 ### Process
 
 ```
-1. Intent Gate      → Restate, identify user + goal + constraint
-2. Codebase Scan    → Read index.md, opencode.jsonc, AGENTS.md, existing agents
-3. Scope Interview  → Full 6-domain deep dive (see below)
-4. Propose Spec     → Full Agent Spec (see template)
-5. Approval Gate    → User approves before build
+1. Intent Gate       → Restate, identify archetype, user + goal + constraint
+2. Codebase Scan     → Read index.md, opencode.jsonc, AGENTS.md, existing agents
+3. Archetype Match   → Select archetype, set domain weights
+4. Scope Interview   → Full 8-domain deep dive (see below)
+5. Propose Spec      → Full Agent Spec (see template)
+6. Approval Gate     → User approves before build
 ```
 
-### Scope Interview (6 Domains)
+### Scope Interview (8 Domains)
 
 #### Domain 1: Identity & Purpose
 
 Who is this agent? What is its reason to exist?
 
-- Name — what is the agent called? (propose if unnamed)
-- Role — what function does it serve in the system?
-- Persona — what communication style? formal / casual / technical / bilingual?
-- Context — what must it know before working? (project, repo, env, rules)
-- Scope — what is the narrowest useful definition of its job?
+- **Name** — what is the agent called? (propose if unnamed)
+- **Archetype** — which archetype? (System/Creative/Developer/Scribe/...)
+- **Role** — what function does it serve in the system?
+  Use one clear sentence: "This agent [does X] for [user Y] so that [outcome Z]."
+- **Persona** — what is its character?
+
+  | Dimension | Options |
+  |-----------|---------|
+  | Tone | formal / casual / technical / playful / authoritative / warm |
+  | Language | Thai / English / bilingual / code-only |
+  | Verbosity | concise / balanced / detailed |
+  | Style | direct / Socratic / narrative / bullet-point |
+  | Vibe (1-2 words) | e.g. "pragmatic realist", "patient teacher", "sharp critic" |
+
+  **Always recommend a persona with examples.**
+  ```
+  "I suggest a technical but approachable tone —
+   precise on facts, relaxed in conversation.
+   Example: 'Let me check the config... Found it.
+   The issue is in line 42 — missing env var.'"
+  ```
+
+- **Context** — what must it know before working?
+  (project, repo, env, rules, conventions)
+- **Narrowest job** — what is the smallest useful definition of its role?
 
 #### Domain 2: Capabilities & Boundaries
 
 What can it do? What must it never do?
 
-- Capabilities — list the core actions, ranked by priority.
-- Boundaries — explicit list of what it must not do.
-- Tools — what tools does it need? (MCPs, APIs, CLI, filesystem)
-- Skills — what skills must it load before work?
-- Delegation — when should it hand off to another agent? Which one?
-- Failure handling — what happens when a capability fails?
+- **Capabilities** — list the core actions, ranked by priority.
+  Each capability should include:
+  - Description (1 sentence)
+  - Trigger (how is this capability invoked?)
+  - Expected output (what does success look like?)
+  - Failure mode (what if it doesn't work?)
+
+- **Boundaries** — explicit list of what it must never do.
+  Format each as a **Critical Rule** with scenario:
+
+  ```
+  Rule: [statement]
+  Scenario: [concrete example of when this rule applies]
+  Consequence: [what happens if broken]
+  ```
+
+  ```
+  Rule: Never modify files outside the project directory.
+  Scenario: User asks "fix my desktop settings" — agent has filesystem access.
+  Consequence: Refuse politely, explain scope limit.
+  ```
+
+- **Tools** — what tools does it need? (MCPs, APIs, CLI, filesystem)
+- **Skills** — what skills must it load before work?
+- **Delegation** — when should it hand off to another agent? Which one?
+- **Failure handling** — what happens when a capability fails?
+  (retry? escalate? log? fallback?)
 
 #### Domain 3: Input & Output
 
-- Input formats — text, file, command, webhook, voice, structured data?
-- Output formats — message, file, API call, action, email, state change?
-- Format constraints — JSON schema? Markdown structure? Naming convention?
-- Timing — synchronous (wait for response) or async (fire and forget)?
-- Error output — how does it report errors? To user? To log? To other agent?
+- **Input formats** — text, file, command, webhook, voice, structured data?
+- **Output formats** — message, file, API call, action, email, state change?
+- **Format constraints** — JSON schema? Markdown structure? Naming convention?
+- **Deliverables** — what concrete outputs does this agent produce?
+
+  For each deliverable:
+  ```
+  Deliverable: Bug report
+  Format: Markdown
+  Template:
+    ## Bug: [title]
+    ### Environment
+    ### Steps to reproduce
+    ### Expected vs Actual
+    ### Severity
+    ### Suggested fix
+  ```
+
+- **Timing** — synchronous (wait for response) or async (fire and forget)?
+- **Error output** — how does it report errors?
+  To user? To log? To other agent?
 
 #### Domain 4: Ecosystem
 
 Where does this agent live? Who does it talk to?
 
-- Platform — OpenCode? ZCode? Claude Code? Custom?
-- Placement — subagent? plugin? standalone? MCP server?
-- Agent team — works alone? reports to supervisor? peers with others?
-- Dependencies — env vars? API keys? config files? services? databases?
-- Communication — how does it receive work? (user message? agent message? event? trigger?)
-- Knowledge — what files/repos/docs must it read before first use?
+- **Platform** — OpenCode? ZCode? Claude Code? Custom?
+- **Placement** — subagent? plugin? standalone? MCP server?
+- **Agent team** — works alone? reports to supervisor? peers with others?
+- **Dependencies** — env vars? API keys? config files? services? databases?
+- **Communication** — how does it receive work?
+  (user message? agent message? event? trigger?)
+- **Knowledge** — what files/repos/docs must it read before first use?
 
-#### Domain 5: Lifecycle
+#### Domain 5: Memory & Learning
 
-- Trigger — always active? on-demand? scheduled? event-driven?
-- Auto-load — must be loaded automatically or only when called?
-- Scope duration — how long does this agent exist? (one session? permanent? until removed?)
-- Maintenance — who updates it? what happens when it breaks?
-- Memory — does it need persistent state? journal? log?
-- Retirement — when and how is this agent removed?
+What should this agent remember? How does it learn over time?
 
-#### Domain 6: Risk & Constraints
+- **Session memory** — what must it remember during one conversation?
+  ```
+  Conversation state: current task, files touched, decisions made.
+  ```
 
-- Failure modes — what are the most likely failures? Worst-case scenario?
-- Sensitive data — does it handle PII, secrets, credentials, private repos?
-- Cost — token budget per session? daily cap? warning threshold?
-- Safety — what guardrails are needed? (approval gates, read-only defaults,
-  confirmation before destructive actions)
-- Testing — how do you verify it works correctly?
-- Fallback — what happens if it can't complete its task?
+- **Persistent memory** — what crosses sessions?
+  ```
+  Cross-session: user preferences, project conventions,
+  past decisions, error patterns.
+  ```
+
+- **Knowledge accumulation** — what should it learn and keep?
+  ```
+  Learn: successful fix patterns, frequently used tools,
+  user's shorthand terms, workflow preferences.
+  Storage: journal files, memory files, index updates.
+  ```
+
+- **Forgetting** — what should it explicitly NOT remember?
+  ```
+  Forget: temporary file paths, one-time credentials,
+  debug output from resolved issues.
+  ```
+
+#### Domain 6: Lifecycle
+
+- **Trigger** — always active? on-demand? scheduled? event-driven?
+- **Auto-load** — must be loaded automatically or only when called?
+- **Scope duration** — how long does this agent exist?
+  (one session? permanent? until removed?)
+- **Maintenance** — who updates it? what happens when it breaks?
+- **Retirement** — when and how is this agent removed?
+
+#### Domain 7: Risk & Constraints
+
+- **Failure modes** — what are the most likely failures?
+  Worst-case scenario?
+- **Sensitive data** — does it handle PII, secrets, credentials, private repos?
+- **Safety guardrails** — what protection layers are needed?
+  (approval gates, read-only defaults, confirmation before destructive actions)
+- **Testing** — how do you verify it works correctly?
+- **Fallback** — what happens if it can't complete its task?
+
+#### Domain 8: Success Metrics
+
+How do you know this agent is working well?
+
+Define at least 3 metrics. Mix types:
+
+| Metric Type | Examples |
+|-------------|----------|
+| **Accuracy** | Answer correctness %, error rate, hallucination rate |
+| **Speed** | Response time, time-per-task, throughput |
+| **Efficiency** | Token cost per task, cache hit rate, retry rate |
+| **Quality** | User approval %, rework rate, first-attempt success |
+| **Business** | Tasks completed, issues resolved, features shipped |
+
+For each metric:
+```
+Metric: First-attempt success rate
+Target: >80%
+Measure: (tasks passed QA on first try / total tasks) × 100
+When: Weekly review
+Alert: If <60%, investigate root cause
+```
 
 ---
 
@@ -231,6 +403,11 @@ For complex agents with multiple integrations, tools, or ecosystem dependencies.
    - Rate limiting
    - Data format mismatch
    - Version drift
+
+5. **Learning Path** — Define how this agent learns over time:
+   - What patterns should it track?
+   - Where does it store learnings?
+   - How does it surface improvements?
 
 ### Output
 
@@ -289,57 +466,56 @@ Risk Register + Cost Model + Safety Review + Approval Log
 User request
     │
     ▼
-  ┌──────────────────────────────────────┐
-  │          1. INTENT GATE              │
-  │  Restate request, identify user,     │
-  │  goal, constraint. Check codebase    │
-  │  for existing context.               │
-  └──────────────────────────────────────┘
+  ┌─────────────────────────────────────────────┐
+  │          1. INTENT GATE                     │
+  │  Restate request, identify archetype,       │
+  │  user, goal, constraint. Check codebase.    │
+  └─────────────────────────────────────────────┘
     │
     ▼
-  ┌──────────────────────────────────────┐
-  │          2. SELECT LAYER             │
-  │  Use signal table to pick            │
-  │  Sketch / Standard / Deep / Critical │
-  │  Default: Standard.                  │
-  │  Write selection + justification.    │
-  └──────────────────────────────────────┘
+  ┌─────────────────────────────────────────────┐
+  │          2. SELECT ARCHETYPE + LAYER        │
+  │  Use archetype catalog → pick archetype     │
+  │  Use signal table → pick Sketch/Standard    │
+  │  /Deep/Critical. Write justification.       │
+  └─────────────────────────────────────────────┘
     │
     ▼
-  ┌──────────────────────────────────────┐
-  │          3. SCOPE INTERVIEW          │
-  │  Depth depends on layer:             │
-  │  Sketch → 5 questions                │
-  │  Standard → 6-domain interview       │
-  │  Deep → + Ecosystem map + deps       │
-  │  Critical → + Risk + Cost + Safety   │
-  │                                      │
-  │  Technique: Grill Methodology        │
-  │  (see section below)                 │
-  └──────────────────────────────────────┘
+  ┌─────────────────────────────────────────────┐
+  │          3. SCOPE INTERVIEW                 │
+  │  Depth depends on layer + archetype:        │
+  │  Sketch → 5 questions                       │
+  │  Standard → 8-domain interview              │
+  │  Deep → + Ecosystem + deps + learning       │
+  │  Critical → + Risk + Cost + Safety          │
+  │                                             │
+  │  Technique: Grill Methodology               │
+  │  Each domain weighted by archetype          │
+  └─────────────────────────────────────────────┘
     │
     ▼
-  ┌──────────────────────────────────────┐
-  │          4. PROPOSE SPEC             │
-  │  Write Agent Spec at layer depth.    │
-  │  Present to user.                    │
-  └──────────────────────────────────────┘
+  ┌─────────────────────────────────────────────┐
+  │          4. PROPOSE SPEC                    │
+  │  Write Agent Spec at layer depth.           │
+  │  Include personality examples, metrics,     │
+  │  deliverables.                              │
+  │  Present to user.                           │
+  └─────────────────────────────────────────────┘
     │
     ▼
-  ┌──────────────────────────────────────┐
-  │          5. APPROVAL GATE            │
-  │  User reviews spec → approve /       │
-  │  revise / reject.                    │
-  │  No build until approved.            │
-  └──────────────────────────────────────┘
+  ┌─────────────────────────────────────────────┐
+  │          5. APPROVAL GATE                   │
+  │  User reviews spec → approve / revise /     │
+  │  reject. No build until approved.           │
+  └─────────────────────────────────────────────┘
     │
     ▼
-  ┌──────────────────────────────────────┐
-  │          6. BUILD OR HANDOFF         │
-  │  If approved → build OR write        │
-  │  handoff notes for next agent.       │
-  │  Update index.md + journal.          │
-  └──────────────────────────────────────┘
+  ┌─────────────────────────────────────────────┐
+  │          6. BUILD OR HANDOFF                │
+  │  If approved → build OR write handoff       │
+  │  notes for next agent.                      │
+  │  Update index.md + journal.                 │
+  └─────────────────────────────────────────────┘
 ```
 
 ---
@@ -354,7 +530,8 @@ Ask one question at a time. Each question follows from the previous answer.
 Do not jump across domains.
 
 ```
-Identity → Capabilities → I/O → Ecosystem → Lifecycle → Risk
+Identity → Archetype → Personality → Capabilities → I/O → Ecosystem
+  → Memory → Lifecycle → Risk → Metrics
 ```
 
 Stay in the current domain until it's resolved. Only move to the next domain
@@ -405,6 +582,8 @@ When the user uses vague terms, pin them down.
 | "user" | who exactly? customer? admin? member? |
 | "system" | which system? agent? platform? service? |
 | "integrate" | API call? webhook? shared DB? event bus? |
+| "personality" | see Domain 1: tone, language, verbosity, style, vibe |
+| "remember" | session memory? persistent? what exactly? |
 
 ### T6: Concrete Scenarios
 
@@ -441,6 +620,7 @@ appropriate depth for the selected layer.
 
 ## v[0.1.0] — [YYYY-MM-DD]
 Layer: [Sketch / Standard / Deep / Critical]
+Archetype: [System / Creative / Developer / Scribe / Specialist / Orchestrator / Researcher / Game]
 Status: [Proposed / Approved / In Progress / Built]
 
 ---
@@ -448,8 +628,22 @@ Status: [Proposed / Approved / In Progress / Built]
 ## Identity
 
 - **Name:**
-- **Role:**
+- **Archetype:**
+- **Role:** This agent [does X] for [user Y] so that [outcome Z].
 - **Persona:**
+
+  | Dimension | Value |
+  |-----------|-------|
+  | Tone | |
+  | Language | |
+  | Verbosity | |
+  | Style | |
+  | Vibe | |
+
+  **Example phrases:**
+  - [context]: "[example phrase]"
+  - [context]: "[example phrase]"
+
 - **Knows context:**
 - **Narrowest job:**
 
@@ -457,24 +651,29 @@ Status: [Proposed / Approved / In Progress / Built]
 
 ## Capabilities
 
-| # | Capability | Priority | Notes |
-|---|-----------|----------|-------|
-| 1 | | High/Med/Low | |
-| 2 | | | |
+| # | Capability | Trigger | Success Output | Failure Mode |
+|---|-----------|---------|---------------|-------------|
+| 1 | | | | |
+| 2 | | | | |
 
-### Boundaries (explicit do-not-do)
-- 
+### Critical Rules (Boundaries)
 
-### Failure Handling
-- 
+| Rule | Scenario | Consequence |
+|------|----------|-------------|
+| | | |
+| | | |
 
----
-
-## Tools & MCPs
+### Tools & MCPs
 
 | Tool/MCP | Purpose | Config | Auth |
 |----------|---------|--------|------|
 | | | | |
+
+### Delegation
+
+| When | To Whom | What Passed |
+|------|---------|-------------|
+| | | |
 
 ---
 
@@ -484,6 +683,13 @@ Status: [Proposed / Approved / In Progress / Built]
 - **Output format:**
 - **Timing:** [sync / async]
 - **Error output:**
+
+### Deliverables
+
+| Deliverable | Format | Template/Idea |
+|-------------|--------|---------------|
+| | | |
+| | | |
 
 ---
 
@@ -506,13 +712,21 @@ Status: [Proposed / Approved / In Progress / Built]
 
 ---
 
+## Memory & Learning
+
+- **Session memory:**
+- **Persistent memory:**
+- **Knowledge accumulation:**
+- **Forgetting:**
+
+---
+
 ## Lifecycle
 
 - **Trigger:**
 - **Auto-load:** [yes / no]
 - **Duration:**
 - **Maintenance:**
-- **Memory / Journal:**
 - **Retirement plan:**
 
 ---
@@ -524,20 +738,30 @@ Status: [Proposed / Approved / In Progress / Built]
 | | | | |
 
 ### Sensitive Data
-- 
-
-### Cost Model
-- **Per-call budget:**
-- **Per-session estimate:**
-- **Monthly projection:**
-- **Cache hit target:**
-- **Alert threshold:**
+-
 
 ### Safety Gates
 - [ ] Read-only by default?
 - [ ] Human approval required?
 - [ ] Audit log?
 - [ ] Rollback plan?
+
+---
+
+## Success Metrics
+
+| Metric | Type | Target | Measure | Alert If |
+|--------|------|--------|---------|----------|
+| | | | | |
+| | | | | |
+| | | | | |
+
+### Cost Model (Layer 4+)
+- **Per-call budget:**
+- **Per-session estimate:**
+- **Monthly projection:**
+- **Cache hit target:**
+- **Alert threshold:**
 
 ---
 
@@ -564,6 +788,7 @@ These gates must pass before moving to the next phase.
 
 ### Intent Gate
 - [ ] Request restated
+- [ ] Archetype identified
 - [ ] User identified
 - [ ] Goal clear
 - [ ] Constraint noted
@@ -571,14 +796,19 @@ These gates must pass before moving to the next phase.
 - [ ] Layer selected with justification
 
 ### Scope Gate (after interview)
-- [ ] All questions for this layer answered
+- [ ] All 8 domains covered at correct layer depth
 - [ ] Codebase searched for answers first
+- [ ] Persona defined with examples
 - [ ] Every vague term sharpened
 - [ ] At least one scenario tested per risk
+- [ ] At least 3 success metrics defined
+- [ ] Critical Rules have scenarios
 - [ ] Cross-reference with existing agents done
 
 ### Spec Gate (before approval)
 - [ ] Agent Spec written at correct layer depth
+- [ ] Personality examples included
+- [ ] Deliverables with format listed
 - [ ] All empty fields explicitly marked TBD or N/A
 - [ ] Approval items listed
 - [ ] Spec presented to user
@@ -607,4 +837,8 @@ These gates must pass before moving to the next phase.
 - [`senior-architect-agent`](https://github.com/aetox-skills/senior-architect-agent)
   — architecture mapping for existing systems.
 - `grill-with-docs` — questioning methodology reference (in skill-library).
+- [`Aetox-Agents-Team`](https://github.com/aetox-skills/Aetox-Agents-Team)
+  — real ZCode agent implementations following this skill's patterns.
+- [`Agency-Agents`](https://github.com/msitarzewski/agency-agents)
+  — 211 agent archetypes across 16 divisions (external reference).
 - `aetox-skills/token-saver` — RTK protocol for token efficiency.

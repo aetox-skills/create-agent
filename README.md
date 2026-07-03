@@ -11,23 +11,31 @@ Create Agent forces a stop before any of that.
 
 **ถามขอบเขตให้ชัด ก่อนสร้าง** — This is the core.
 
-The skill operates at **4 depth layers**, so you never over-engineer a simple
-agent or under-scope a complex one:
+The skill designs agents across **8 dimensions**:
+
+```
+Archetype → Personality → Capabilities → Ecosystem → I/O → Memory → Lifecycle → Metrics
+```
+
+It operates at **4 depth layers**:
 
 ```
 Layer 1 — Sketch      (5 quick questions for small changes)
-Layer 2 — Standard    (full 6-domain Scope Interview)
-Layer 3 — Deep        (adds ecosystem map + dependency trace)
-Layer 4 — Critical    (adds risk model + cost model + safety gates)
+Layer 2 — Standard    (full 8-domain Scope Interview)
+Layer 3 — Deep        (adds ecosystem map + dependency trace + learning path)
+Layer 4 — Critical    (adds risk model + cost model + safety gates + compliance)
 ```
 
-Every layer produces a validated **Agent Spec** — the difference is completeness.
+With an **Archetype System** (8 archetypes) that adjusts interview weight
+per domain — a Developer agent needs different depth than a Scribe.
 
-The skill borrows 7 questioning techniques from `grill-with-docs`:
-Decision Tree Walk, One at a Time, Recommend an Answer, Codebase-First,
-Sharpen Fuzzy Language, Concrete Scenarios, and Cross-Reference.
-
-Plus checkpoint gates (Intent → Scope → Spec → Build) to prevent skipping.
+Plus:
+- **Personality framework** — tone, language, verbosity, style, vibe, examples
+- **Critical Rules** with concrete scenarios — not just "don't do X"
+- **Success Metrics** — every agent must have 3+ measurable KPIs
+- **Memory & Learning** — session, persistent, knowledge accumulation
+- **Deliverable specs** — concrete output templates per capability
+- Checkpoint gates (Intent → Scope → Spec → Build) to prevent skipping
 
 ## Use When
 

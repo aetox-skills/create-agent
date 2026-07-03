@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.3.0 (2026-07-03)
+
+- **Agent Archetype System** — 8 archetypes (System, Creative, Developer, Scribe, Specialist, Orchestrator, Researcher, Game) with domain weight table
+- **Personality Framework** — tone, language, verbosity, style, vibe, with example phrases (inspired by Agency-Agents 211-agent patterns)
+- **Critical Rules with Scenarios** — Rule + Scenario + Consequence format for boundaries (from Agency-Agents safety pattern)
+- **Success Metrics** — 5 metric types (Accuracy, Speed, Efficiency, Quality, Business) with target/measure/alert per metric
+- **Memory & Learning domain** — session memory, persistent memory, knowledge accumulation, forgetting rules
+- **Deliverables section** — concrete output templates per capability/archetype
+- **Expanded Agent Spec template** — 14 sections matching the new 8-domain interview
+- Checkpoint Gates updated: Archetype, Persona, Metrics, Critical Rules added to Scope/Spec gates
+- Grill Methodology expanded: +Sharpen for "personality" and "remember" terms
+- Related section: linked Aetox-Agents-Team + Agency-Agents as reference
+
 ## v0.2.0 (2026-07-03)
 
 - **Multi-layer design system** — 4 depth layers: Sketch, Standard, Deep, Critical
